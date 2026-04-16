@@ -1,0 +1,111 @@
+⚠ Warning: Next.js inferred your workspace root, but it may not be correct.
+ We detected multiple lockfiles and selected the directory of C:\Users\qq\Desktop\gaming service sell\package-lock.json as the root directory.
+ To silence this warning, set `turbopack.root` in your Next.js config, or consider removing one of the lockfiles if it's not needed.
+   See https://nextjs.org/docs/app/api-reference/config/next-config-js/turbopack#root-directory for more information.
+ Detected additional lockfiles: 
+   * C:\Users\qq\Desktop\gaming service sell\su-ling-esports\package-lock.json
+
+⚠ Turbopack's filesystem cache has been deleted because we previously detected an internal error in Turbopack. Builds or page loads may be slower as a result.
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+Error: Both middleware file "./middleware.ts" and proxy file "./proxy.ts" are detected. Please use "./proxy.ts" only. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+    at ignore-listed frames
+⨯ unhandledRejection: Error: Both middleware file "./middleware.ts" and proxy file "./proxy.ts" are detected. Please use "./proxy.ts" only. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+    at ignore-listed frames
+⨯ unhandledRejection:  Error: Both middleware file "./middleware.ts" and proxy file "./proxy.ts" are detected. Please use "./proxy.ts" only. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+    at ignore-listed frames
+Error: Both middleware file "./middleware.ts" and proxy file "./proxy.ts" are detected. Please use "./proxy.ts" only. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+    at ignore-listed frames
+⨯ unhandledRejection: Error: Both middleware file "./middleware.ts" and proxy file "./proxy.ts" are detected. Please use "./proxy.ts" only. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+    at ignore-listed frames
+⨯ unhandledRejection:  Error: Both middleware file "./middleware.ts" and proxy file "./proxy.ts" are detected. Please use "./proxy.ts" only. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+    at ignore-listed frames
+Error: Both middleware file "./middleware.ts" and proxy file "./proxy.ts" are detected. Please use "./proxy.ts" only. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+    at ignore-listed frames
+⨯ unhandledRejection: Error: Both middleware file "./middleware.ts" and proxy file "./proxy.ts" are detected. Please use "./proxy.ts" only. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+    at ignore-listed frames
+⨯ unhandledRejection:  Error: Both middleware file "./middleware.ts" and proxy file "./proxy.ts" are detected. Please use "./proxy.ts" only. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+    at ignore-listed frames
+Error: Both middleware file "./middleware.ts" and proxy file "./proxy.ts" are detected. Please use "./proxy.ts" only. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+    at ignore-listed frames
+⨯ unhandledRejection: Error: Both middleware file "./middleware.ts" and proxy file "./proxy.ts" are detected. Please use "./proxy.ts" only. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+    at ignore-listed frames
+⨯ unhandledRejection:  Error: Both middleware file "./middleware.ts" and proxy file "./proxy.ts" are detected. Please use "./proxy.ts" only. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+    at ignore-listed frames
+⚠ Found a change in next.config.ts. Restarting the server to apply the changes...
+⚠ turbopack.root should be absolute, using: C:\Users\qq\Desktop\gaming service sell\su-ling-esports
+[browser] Uncaught Error: Hydration failed because the server rendered text didn't match the client. As a result this tree will be regenerated on the client. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <HTTPAccessFallbackBoundary notFound={{...}} forbidden={undefined} unauthorized={undefined}>
+      <HTTPAccessFallbackErrorBoundary pathname="/" notFound={{...}} forbidden={undefined} unauthorized={undefined} ...>
+        <RedirectBoundary>
+          <RedirectErrorBoundary router={{...}}>
+            <InnerLayoutRouter url="/" tree={[...]} params={{}} cacheNode={{rsc:{...}, ...}} segmentPath={[...]} ...>
+              <SegmentViewNode type="page" pagePath="page.tsx">
+                <SegmentTrieNode>
+                <ClientPageRoot Component={function HomePage} serverProvidedParams={{...}}>
+                  <HomePage params={Promise} searchParams={Promise}>
+                    <div className="relative m...">
+                      <div>
+                      <div className="max-w-7xl ...">
+                        <div>
+                        <div className="relative r...">
+                          <div>
+                          <div>
+                          <div>
+                          <div>
+                          <div className="absolute t...">
+                            <Badge className="w-fit mb-4...">
+                              <span
+                                data-slot="badge"
+                                data-variant="default"
+                                className={"group/badge inline-flex h-5 shrink-0 items-center justify-center gap-1 ov..."}
+                                ref={null}
+                              >
++                               热门推荐
+-                               Popular Recommendations
+                            ...
+                        ...
+              ...
+            ...
+
+    at <unknown> (https://react.dev/link/hydration-mismatch)
+    at throwOnHydrationMismatch (file://C:/Users/qq/Desktop/gaming service sell/su-ling-esports/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:3318:56)
+    at prepareToHydrateHostInstance (file://C:/Users/qq/Desktop/gaming service sell/su-ling-esports/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:3372:23)
+    at completeWork (file://C:/Users/qq/Desktop/gaming service sell/su-ling-esports/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:6922:60)
+    at runWithFiberInDEV (file://C:/Users/qq/Desktop/gaming service sell/su-ling-esports/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:965:74)
+    at completeUnitOfWork (file://C:/Users/qq/Desktop/gaming service sell/su-ling-esports/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:9622:23)
+    at performUnitOfWork (file://C:/Users/qq/Desktop/gaming service sell/su-ling-esports/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:9557:28)
+    at workLoopConcurrentByScheduler (file://C:/Users/qq/Desktop/gaming service sell/su-ling-esports/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:9551:58)
+    at renderRootConcurrent (file://C:/Users/qq/Desktop/gaming service sell/su-ling-esports/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:9534:71)
+    at performWorkOnRoot (file://C:/Users/qq/Desktop/gaming service sell/su-ling-esports/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:9061:150)
+    at performWorkOnRootViaSchedulerTask (file://C:/Users/qq/Desktop/gaming service sell/su-ling-esports/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:10255:9)
+    at MessagePort.performWorkUntilDeadline (file://C:/Users/qq/Desktop/gaming service sell/su-ling-esports/.next/dev/static/chunks/node_modules_next_dist_compiled_0rpq4pf._.js:2647:64)
+    at span (<anonymous>)
+    at renderTag (file://C:/Users/qq/Desktop/gaming service sell/su-ling-esports/.next/dev/static/chunks/node_modules_%40base-ui_react_esm_0-q2yl-._.js:687:200)
+    at evaluateRenderProp (file://C:/Users/qq/Desktop/gaming service sell/su-ling-esports/.next/dev/static/chunks/node_modules_%40base-ui_react_esm_0-q2yl-._.js:652:20)
+    at useRenderElement (file://C:/Users/qq/Desktop/gaming service sell/su-ling-esports/.next/dev/static/chunks/node_modules_%40base-ui_react_esm_0-q2yl-._.js:558:12)
+    at useRender (file://C:/Users/qq/Desktop/gaming service sell/su-ling-esports/.next/dev/static/chunks/node_modules_0kcch.~._.js:3466:209)
+    at Badge (file://C:/Users/qq/Desktop/gaming service sell/su-ling-esports/.next/dev/static/chunks/_0mp56mf._.js:158:203)
+    at HomePage (file://C:/Users/qq/Desktop/gaming service sell/su-ling-esports/.next/dev/static/chunks/_0mp56mf._.js:402:239)
+    at ClientPageRoot (file://C:/Users/qq/Desktop/gaming service sell/su-ling-esports/.next/dev/static/chunks/node_modules_next_0zl6c1m._.js:5337:50)
+⨯ upstream image response failed for https://images.unsplash.com/photo-1552820728-8b83bb6b2b0a?w=200&h=200&fit=crop 404
+⨯ upstream image response failed for https://images.unsplash.com/photo-1612287230217-969b698cb8d1?w=400&h=500&fit=crop 404
+⨯ upstream image response failed for https://images.unsplash.com/photo-1593305841991-05c29736cec7?w=200&h=200&fit=crop 404
+⨯ upstream image response failed for https://images.unsplash.com/photo-1612287230217-969b698cb8d1?w=200&h=200&fit=crop 404
+[browser] Image with src "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=400&h=500&fit=crop" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes (file://C:/Users/qq/Desktop/gaming service sell/su-ling-esports/.next/dev/static/chunks/node_modules_next_dist_115brz8._.js:2431:13)
+[browser] Image with src "https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=400&h=500&fit=crop" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes (file://C:/Users/qq/Desktop/gaming service sell/su-ling-esports/.next/dev/static/chunks/node_modules_next_dist_115brz8._.js:2431:13)
+[browser] Image with src "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=400&h=500&fit=crop" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes (file://C:/Users/qq/Desktop/gaming service sell/su-ling-esports/.next/dev/static/chunks/node_modules_next_dist_115brz8._.js:2431:13)
+[browser] Image with src "https://images.unsplash.com/photo-1560253023-3ec5d502959f?w=400&h=500&fit=crop" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes (file://C:/Users/qq/Desktop/gaming service sell/su-ling-esports/.next/dev/static/chunks/node_modules_next_dist_115brz8._.js:2431:13)
+[browser] Image with src "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=400&h=500&fit=crop" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes (file://C:/Users/qq/Desktop/gaming service sell/su-ling-esports/.next/dev/static/chunks/node_modules_next_dist_115brz8._.js:2431:13)
+[browser] Image with src "https://images.unsplash.com/photo-1542751110-97427bbecf20?w=400&h=500&fit=crop" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes (file://C:/Users/qq/Desktop/gaming service sell/su-ling-esports/.next/dev/static/chunks/node_modules_next_dist_115brz8._.js:2431:13)

@@ -1,0 +1,44 @@
+
+> su-ling-esports@0.1.0 dev
+> next dev
+
+▲ Next.js 16.2.3 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.1.3:3000
+- Environments: .env
+✓ Ready in 1245ms
+
+▲ Next.js 16.2.3 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.1.3:3000
+- Environments: .env
+✓ Ready in 1030ms
+
+○ Compiling / ...
+ GET / 200 in 9.9s (next.js: 9.1s, application-code: 839ms)
+ GET /api/auth/me 401 in 1444ms (next.js: 1422ms, application-code: 23ms)
+ GET /api/auth/me 401 in 13ms (next.js: 4ms, application-code: 9ms)
+ GET /api/games 200 in 1469ms (next.js: 1168ms, application-code: 300ms)
+ GET /api/products?limit=8 200 in 1485ms (next.js: 1311ms, application-code: 174ms)
+ GET /api/games 200 in 19ms (next.js: 4ms, application-code: 16ms)
+ GET /api/products?limit=8 200 in 55ms (next.js: 5ms, application-code: 50ms)
+ GET /api/games 200 in 58ms (next.js: 17ms, application-code: 41ms)
+ GET /api/games 200 in 76ms (next.js: 16ms, application-code: 59ms)
+ GET /api/games/6cdfabe7-c7ac-4c64-af69-f1e0cbc73b38/categories 200 in 1752ms (next.js: 1731ms, application-code: 21ms)
+ GET /api/games/6cdfabe7-c7ac-4c64-af69-f1e0cbc73b38/categories 200 in 31ms (next.js: 14ms, application-code: 17ms)
+✓ Compiled in 634ms
+ GET / 200 in 527ms (next.js: 240ms, application-code: 288ms)
+ GET / 200 in 104ms (next.js: 9ms, application-code: 95ms)
+○ Compiling /login ...
+ GET /login 200 in 7.2s (next.js: 6.8s, proxy.ts: 15ms, application-code: 402ms)
+ GET /api/auth/me 401 in 904ms (next.js: 781ms, application-code: 123ms)
+ POST /api/auth/login 200 in 2.2s (next.js: 1575ms, application-code: 587ms)
+○ Compiling /admin ...
+ GET /admin 200 in 12.0s (next.js: 9.9s, proxy.ts: 46ms, application-code: 2.1s)
+ GET /api/auth/me 200 in 527ms (next.js: 245ms, application-code: 283ms)
+ GET /api/admin/stats 200 in 1815ms (next.js: 1524ms, application-code: 290ms)
+○ Compiling /admin/settings ...
+ GET /admin/settings 200 in 4.2s (next.js: 3.9s, proxy.ts: 131ms, application-code: 205ms)
+ GET /api/auth/me 200 in 864ms (next.js: 389ms, application-code: 474ms)
+ GET /api/admin/configs 200 in 2.4s (next.js: 2.4s, application-code: 61ms)
+ GET /api/admin/configs 200 in 60ms (next.js: 14ms, application-code: 47ms)
