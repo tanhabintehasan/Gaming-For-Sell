@@ -1,50 +1,76 @@
 # Netlify Deployment Guide
 
-This guide covers deploying the **Su-Ling Esports** Next.js application to Netlify.
+This guide covers deploying the **Su-Ling Esports** Next.js application to Netlify using **Supabase PostgreSQL**.
 
 ---
 
 ## ⚠️ Important: Database Requirement
 
-This project currently uses **SQLite** (`prisma/dev.db`) for local development.
+This project uses **Prisma + PostgreSQL**.
 
-**SQLite is NOT suitable for Netlify production** because:
-- Netlify Functions are **serverless and stateless** — any writes to a local file will be lost when the function instance recycles.
-- Netlify deploys are **immutable** — the filesystem is read-only except for `/tmp`, which is also ephemeral.
+**Do NOT use SQLite on Netlify** — Netlify Functions are serverless and stateless, so local file writes are lost when the function instance recycles.
 
-### You have two options for production:
-
-#### Option A: Use a Serverless Database (Recommended)
-Migrate to **PostgreSQL** via one of these free providers:
-- **Neon** (https://neon.tech) — serverless PostgreSQL
-- **Supabase** (https://supabase.com) — PostgreSQL with generous free tier
-
-Steps:
-1. Create a PostgreSQL database on Neon or Supabase.
-2. Copy the connection string (e.g., `postgresql://user:pass@host/db`).
-3. Update `prisma/schema.prisma`:
-   ```prisma
-   datasource db {
-     provider = "postgresql"
-     url      = env("DATABASE_URL")
-   }
-   ```
-4. Run migrations locally (or from your computer) against the remote DB:
-   ```bash
-   npx prisma migrate deploy
-   npx prisma db seed
-   ```
-
-#### Option B: Keep SQLite for Demo Only
-If you only need a **static demo** with no mutations (orders, messages, etc.), you can commit `prisma/dev.db` to Git and set:
-```
-DATABASE_URL="file:./prisma/dev.db"
-```
-**Not recommended** for real usage.
+We recommend **Supabase** (free PostgreSQL tier) as the production database.
 
 ---
 
-## 1. Push Code to GitHub
+## Fixing the Prisma + Supabase Connection (P1001)
+
+If you see:
+```
+Error: P1001: Can't reach database server at db.xxx.supabase.co:5432
+```
+
+This usually means:
+1. **Your ISP/network blocks IPv6** or restricts direct PostgreSQL connections.
+2. You are using the **Direct Connection URL** (`db.xxx.supabase.co`) for Prisma migrations.
+
+### ✅ Solution: Use the Supabase Session Pooler for both URLs
+
+Supabase provides a **Connection Pooler** (`*.pooler.supabase.com:5432`) that works over IPv4 and bypasses most network restrictions.
+
+Update your `.env`:
+
+```bash
+# Application queries (with Prisma + pgbouncer flags)
+DATABASE_URL="postgresql://postgres.<PROJECT_REF>:<PASSWORD>@aws-0-<REGION>.pooler.supabase.com:5432/postgres?pgbouncer=true&connection_limit=1"
+
+# Migrations (use the SAME pooler URL in Session mode on port 5432)
+DIRECT_URL="postgresql://postgres.<PROJECT_REF>:<PASSWORD>@aws-0-<REGION>.pooler.supabase.com:5432/postgres"
+```
+
+**Why this works:**
+- Port `5432` on the Supabase pooler uses **Session mode**, which is fully compatible with Prisma migrations.
+- The pooler routes over IPv4 and is not blocked like the direct `db.*` hostname.
+- `?pgbouncer=true&connection_limit=1` tells Prisma's query engine that it is talking through a connection pooler.
+
+### Where to find your pooler URL
+1. Go to [https://app.supabase.com](https://app.supabase.com) → your project.
+2. Open **Settings → Database**.
+3. Under **Connection string**, choose **URI** and copy the **Session pooler** string (port `5432`).
+4. Make sure the username format is: `postgres.<project_ref>` (e.g., `postgres.opnfmyqgjtikknsohgzv`).
+
+---
+
+## 1. Prisma Schema (Already Configured)
+
+Your `prisma/schema.prisma` should contain:
+
+```prisma
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+```
+
+This allows:
+- **Queries** to use the pooled `DATABASE_URL`
+- **Migrations** to use the direct `DIRECT_URL`
+
+---
+
+## 2. Push Code to GitHub
 
 Make sure all code is committed and pushed:
 
@@ -56,25 +82,26 @@ git push origin main
 
 ---
 
-## 2. Connect Repo to Netlify
+## 3. Connect Repo to Netlify
 
 1. Go to [https://app.netlify.com](https://app.netlify.com) and log in.
 2. Click **"Add new site" → "Import an existing project"**.
 3. Select **GitHub** as the Git provider.
 4. Find and select your repository (`tanhabintehasan/Gaming-For-Sell`).
 5. Netlify will auto-detect the build settings from `netlify.toml`:
-   - **Build command:** `npx prisma generate && npm run build`
+   - **Build command:** `npx prisma migrate deploy && npx prisma generate && npm run build`
    - **Publish directory:** `.next`
 
 ---
 
-## 3. Set Environment Variables
+## 4. Set Environment Variables on Netlify
 
 In Netlify, go to **Site configuration → Environment variables** and add:
 
 | Variable | Value | Required |
 |----------|-------|----------|
-| `DATABASE_URL` | Your PostgreSQL connection string | **Yes** |
+| `DATABASE_URL` | `postgresql://postgres.<PROJECT_REF>:<PASSWORD>@aws-0-<REGION>.pooler.supabase.com:5432/postgres?pgbouncer=true&connection_limit=1` | **Yes** |
+| `DIRECT_URL` | `postgresql://postgres.<PROJECT_REF>:<PASSWORD>@aws-0-<REGION>.pooler.supabase.com:5432/postgres` | **Yes** |
 | `JWT_SECRET` | A strong random string (min 32 chars) | **Yes** |
 | `NODE_ENV` | `production` | Recommended |
 
@@ -85,34 +112,35 @@ node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
 
 ---
 
-## 4. Database Migration on Netlify (if using PostgreSQL)
+## 5. Run Migrations
 
-You have two ways to run Prisma migrations:
+### Option A: Run migrations locally (recommended)
+Make sure your local `.env` has the correct `DIRECT_URL`, then run:
 
-### Method A: Run migrations locally before pushing
 ```bash
 npx prisma migrate deploy
 npx prisma db seed
 ```
 
-### Method B: Run migrations as part of the Netlify build
-Update `netlify.toml`:
+### Option B: Run migrations during Netlify build
+Your `netlify.toml` already includes this:
 ```toml
 [build]
   command = "npx prisma migrate deploy && npx prisma generate && npm run build"
   publish = ".next"
 ```
-**Note:** `prisma migrate deploy` requires write access to the database. Ensure your `DATABASE_URL` has full permissions.
+
+This works as long as `DIRECT_URL` is reachable from Netlify's build servers (the pooler URL almost always is).
 
 ---
 
-## 5. Build Settings (Already Configured)
+## 6. Build Settings (Already Configured)
 
 Your repo already contains `netlify.toml`:
 
 ```toml
 [build]
-  command = "npx prisma generate && npm run build"
+  command = "npx prisma migrate deploy && npx prisma generate && npm run build"
   publish = ".next"
 
 [functions]
@@ -126,7 +154,7 @@ The `@netlify/plugin-nextjs` package is also installed in `package.json`.
 
 ---
 
-## 6. Deploy
+## 7. Deploy
 
 1. Click **Deploy site** in Netlify.
 2. Wait for the build to complete (usually 2–4 minutes).
@@ -134,7 +162,7 @@ The `@netlify/plugin-nextjs` package is also installed in `package.json`.
 
 ---
 
-## 7. Post-Deploy Checklist
+## 8. Post-Deploy Checklist
 
 - [ ] Visit the live URL and confirm the homepage loads.
 - [ ] Log in with a test account (e.g., `13800138000` / `123456`).
@@ -145,11 +173,13 @@ The `@netlify/plugin-nextjs` package is also installed in `package.json`.
 
 ## Troubleshooting
 
+### "P1001: Can't reach database server"
+- **Do not use** `db.xxx.supabase.co` if your network blocks it.
+- **Use the pooler URL** (`*.pooler.supabase.com:5432`) for both `DATABASE_URL` and `DIRECT_URL`.
+- Ensure the username is `postgres.<project_ref>` (not just `postgres` for the pooler).
+
 ### "Module not found: @prisma/client"
 Make sure `npx prisma generate` runs **before** `npm run build`. This is already set in `netlify.toml`.
-
-### "Database is read-only" or "SQLITE_BUSY"
-You are trying to write to SQLite on Netlify. **Switch to PostgreSQL** (see Option A above).
 
 ### API routes return 404
 Ensure `netlify.toml` includes the `@netlify/plugin-nextjs` plugin and that `.next` is the publish directory.
@@ -177,4 +207,6 @@ git push origin main
 
 ---
 
-**Need help?** Check the Netlify Next.js docs: https://docs.netlify.com/frameworks/next-js/overview/
+**Need help?** 
+- Netlify Next.js docs: https://docs.netlify.com/frameworks/next-js/overview/
+- Supabase connection docs: https://supabase.com/docs/guides/database/connecting-to-postgres
