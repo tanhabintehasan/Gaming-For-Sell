@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { cn } from '@/lib/utils'
+import { fetchAuthMe } from '@/lib/auth-client'
 
 interface AuthUser {
   id: string
@@ -32,8 +33,7 @@ export function DesktopNav() {
   const [user, setUser] = useState<AuthUser | null>(null)
 
   useEffect(() => {
-    fetch('/api/auth/me')
-      .then((r) => r.json())
+    fetchAuthMe()
       .then((res) => {
         if (res.success) setUser(res.data)
       })

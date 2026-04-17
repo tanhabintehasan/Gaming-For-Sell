@@ -40,19 +40,38 @@ export default function HomePage() {
   const [categories, setCategories] = useState<Category[]>([])
 
   useEffect(() => {
-    fetch('/api/games').then((r) => r.json()).then((res) => {
-      if (res.success) setGames(res.data)
-    })
-    fetch('/api/products?limit=8').then((r) => r.json()).then((res) => {
-      if (res.success) setProducts(res.data.products)
-    })
-    fetch('/api/games').then((r) => r.json()).then((res) => {
-      if (res.success && res.data[0]) {
-        fetch(`/api/games/${res.data[0].id}/categories`).then((r) => r.json()).then((catRes) => {
-          if (catRes.success) setCategories(catRes.data.slice(0, 14))
-        })
-      }
-    })
+    const safeJson = (r: Response) => {
+      if (!r.ok) return Promise.resolve({ success: false })
+      return r.json().catch(() => ({ success: false }))
+    }
+
+    fetch('/api/games')
+      .then(safeJson)
+      .then((res) => {
+        if (res.success) setGames(res.data)
+      })
+      .catch(() => {})
+
+    fetch('/api/products?limit=8')
+      .then(safeJson)
+      .then((res) => {
+        if (res.success) setProducts(res.data.products)
+      })
+      .catch(() => {})
+
+    fetch('/api/games')
+      .then(safeJson)
+      .then((res) => {
+        if (res.success && res.data[0]) {
+          fetch(`/api/games/${res.data[0].id}/categories`)
+            .then(safeJson)
+            .then((catRes) => {
+              if (catRes.success) setCategories(catRes.data.slice(0, 14))
+            })
+            .catch(() => {})
+        }
+      })
+      .catch(() => {})
   }, [])
 
   const dailyDeals = products.slice(0, 4)

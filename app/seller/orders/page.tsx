@@ -8,6 +8,7 @@ import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
+import { fetchAuthMe } from '@/lib/auth-client'
 
 interface Order {
   id: string
@@ -38,8 +39,7 @@ export default function SellerOrdersPage() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    fetch('/api/auth/me')
-      .then((r) => r.json())
+    fetchAuthMe()
       .then((res) => {
         if (!res.success || (res.data.level !== 'SELLER' && res.data.level !== 'ADMIN')) {
           router.push('/login')

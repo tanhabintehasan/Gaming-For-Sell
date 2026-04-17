@@ -23,6 +23,7 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { toast } from 'sonner'
+import { fetchAuthMe } from '@/lib/auth-client'
 
 interface User {
   id: string
@@ -72,8 +73,7 @@ export default function ProfilePage() {
   const [orders, setOrders] = useState<Order[]>([])
 
   useEffect(() => {
-    fetch('/api/auth/me')
-      .then((r) => r.json())
+    fetchAuthMe()
       .then((res) => {
         if (res.success) {
           setUser(res.data)

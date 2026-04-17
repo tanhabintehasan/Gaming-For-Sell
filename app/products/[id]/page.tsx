@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
 import { toast } from 'sonner'
+import { fetchAuthMe } from '@/lib/auth-client'
 
 interface Product {
   id: string
@@ -78,8 +79,7 @@ export default function ProductDetailPage() {
           setIsFav(getFavorites().some((f) => f.id === res.data.id))
         }
       })
-    fetch('/api/auth/me')
-      .then((r) => r.json())
+    fetchAuthMe()
       .then((res) => {
         if (res.success) setUser(res.data)
       })

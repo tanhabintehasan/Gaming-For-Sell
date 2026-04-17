@@ -11,6 +11,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { toast } from 'sonner'
 import Image from 'next/image'
+import { fetchAuthMe } from '@/lib/auth-client'
 import {
   Dialog,
   DialogContent,
@@ -63,8 +64,7 @@ export default function SellerProductsPage() {
   const [saving, setSaving] = useState(false)
 
   useEffect(() => {
-    fetch('/api/auth/me')
-      .then((r) => r.json())
+    fetchAuthMe()
       .then((res) => {
         if (!res.success || (res.data.level !== 'SELLER' && res.data.level !== 'ADMIN')) {
           router.push('/login')

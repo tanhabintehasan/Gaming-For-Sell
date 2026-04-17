@@ -9,6 +9,7 @@ import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { toast } from 'sonner'
+import { fetchAuthMe } from '@/lib/auth-client'
 
 interface Game {
   id: string
@@ -39,8 +40,7 @@ export default function SellerApplyPage() {
   const [selectedGames, setSelectedGames] = useState<string[]>([])
 
   useEffect(() => {
-    fetch('/api/auth/me')
-      .then((r) => r.json())
+    fetchAuthMe()
       .then((res) => {
         if (res.success) setUser(res.data)
       })

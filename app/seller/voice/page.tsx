@@ -6,6 +6,7 @@ import { ChevronLeft, Mic, Upload, Play, Pause } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { toast } from 'sonner'
+import { fetchAuthMe } from '@/lib/auth-client'
 
 export default function SellerVoicePage() {
   const [profile, setProfile] = useState<{ voiceIntroUrl?: string | null } | null>(null)
@@ -15,8 +16,7 @@ export default function SellerVoicePage() {
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
-    fetch('/api/auth/me')
-      .then((r) => r.json())
+    fetchAuthMe()
       .then((res) => {
         if (res.success) setProfile(res.data.sellerProfile || {})
       })

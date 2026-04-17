@@ -15,6 +15,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+import { fetchAuthMe } from '@/lib/auth-client'
 
 interface EarningsData {
   balance: number
@@ -57,8 +58,7 @@ export default function SellerEarningsPage() {
   const [submitting, setSubmitting] = useState(false)
 
   useEffect(() => {
-    fetch('/api/auth/me')
-      .then((r) => r.json())
+    fetchAuthMe()
       .then((res) => {
         if (!res.success || (res.data.level !== 'SELLER' && res.data.level !== 'ADMIN')) {
           router.push('/login')

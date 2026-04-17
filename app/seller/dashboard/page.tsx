@@ -23,6 +23,7 @@ import { Card } from '@/components/ui/card'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { toast } from 'sonner'
+import { fetchAuthMe } from '@/lib/auth-client'
 
 interface User {
   id: string
@@ -60,8 +61,7 @@ export default function SellerDashboardPage() {
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
-    fetch('/api/auth/me')
-      .then((r) => r.json())
+    fetchAuthMe()
       .then((res) => {
         if (res.success) {
           if (res.data.level !== 'SELLER' && res.data.level !== 'ADMIN') {

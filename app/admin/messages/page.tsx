@@ -7,6 +7,7 @@ import { ChevronLeft, MessageSquare } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
+import { fetchAuthMe } from '@/lib/auth-client'
 
 interface Conversation {
   otherId: string
@@ -30,8 +31,7 @@ export default function AdminMessagesPage() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    fetch('/api/auth/me')
-      .then((r) => r.json())
+    fetchAuthMe()
       .then((res) => {
         if (!res.success || res.data.level !== 'ADMIN') {
           router.push('/backstage/admin/login')

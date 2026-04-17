@@ -16,6 +16,7 @@ import {
 } from '@/components/ui/dialog'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
+import { fetchAuthMe } from '@/lib/auth-client'
 
 interface Withdrawal {
   id: string
@@ -58,8 +59,7 @@ export default function AdminWithdrawalsPage() {
   const [processing, setProcessing] = useState(false)
 
   useEffect(() => {
-    fetch('/api/auth/me')
-      .then((r) => r.json())
+    fetchAuthMe()
       .then((res) => {
         if (!res.success || res.data.level !== 'ADMIN') {
           router.push('/backstage/admin/login')
