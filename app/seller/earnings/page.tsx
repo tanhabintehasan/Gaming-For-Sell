@@ -61,7 +61,7 @@ export default function SellerEarningsPage() {
     fetchAuthMe()
       .then((res) => {
         if (!res.success || (res.data.level !== 'SELLER' && res.data.level !== 'ADMIN')) {
-          router.push('/login')
+          router.push('/seller/login')
         }
       })
 

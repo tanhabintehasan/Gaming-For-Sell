@@ -64,7 +64,7 @@ const menuItems = [
   { icon: Info, label: '关于我们', href: '/pages/about-us' },
   { icon: AlertCircle, label: '未成年人告知', href: '/pages/minor-notice' },
   { icon: Lightbulb, label: '建议反馈', href: '/pages/feedback' },
-  { icon: Gamepad2, label: '申请打手', href: '/apply/seller' },
+  { icon: Gamepad2, label: '申请打手', href: '/apply' },
 ]
 
 export default function ProfilePage() {
@@ -76,6 +76,10 @@ export default function ProfilePage() {
     fetchAuthMe()
       .then((res) => {
         if (res.success) {
+          if (res.data.level === 'SELLER' || res.data.level === 'ADMIN') {
+            router.push('/seller/dashboard')
+            return
+          }
           setUser(res.data)
         } else {
           router.push('/login')
@@ -133,26 +137,9 @@ export default function ProfilePage() {
             <p className="text-[rgba(180,200,255,0.55)] text-sm mt-1 font-[family-name:var(--font-orbitron)]">ID: {user.id.slice(0, 8)}</p>
             <div className="flex items-center gap-3 mt-4">
               <span className="px-4 py-1.5 rounded-full bg-[rgba(0,245,255,0.1)] border border-[rgba(0,245,255,0.2)] text-[#00f5ff] text-xs font-semibold">
-                {user.level === 'ADMIN' ? '管理员' : user.level === 'SELLER' ? '打手' : '用户'}
+                用户
               </span>
-              {user.sellerProfile?.isVerified && (
-                <span className="px-4 py-1.5 rounded-full bg-[rgba(255,215,0,0.1)] border border-[rgba(255,215,0,0.25)] text-[#ffd700] text-xs font-semibold">
-                  已认证
-                </span>
-              )}
             </div>
-            {user.sellerProfile && (
-              <div className="flex items-center gap-10 mt-8">
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-[#00f5ff] font-[family-name:var(--font-orbitron)]">¥{user.sellerProfile.balance}</div>
-                  <div className="text-xs text-[rgba(180,200,255,0.5)] mt-1">余额</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-[#ff2f7d] font-[family-name:var(--font-orbitron)]">¥{user.sellerProfile.totalEarnings}</div>
-                  <div className="text-xs text-[rgba(180,200,255,0.5)] mt-1">累计收入</div>
-                </div>
-              </div>
-            )}
           </div>
         </div>
 

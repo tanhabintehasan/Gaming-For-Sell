@@ -79,33 +79,69 @@ function CategoriesContent() {
 
   return (
     <div className="relative min-h-screen lg:py-8">
-      {/* Mobile Game Selector */}
-      <div className="lg:hidden glass-card border-b-0 border-x-0 border-t-0 sticky top-0 z-30 rounded-none">
-        <ScrollArea className="whitespace-nowrap">
-          <div className="flex px-4 py-3 gap-5">
-            {games.map((game) => (
+      {/* ========== MOBILE TOP NAVIGATION ========== */}
+      <div className="lg:hidden">
+        {/* Game Tabs */}
+        <div className="glass-card border-b-0 border-x-0 border-t-0 sticky top-0 z-40 rounded-none">
+          <ScrollArea className="whitespace-nowrap">
+            <div className="flex px-4 py-3 gap-5">
+              {games.map((game) => (
+                <button
+                  key={game.id}
+                  onClick={() => {
+                    setSelectedGame(game.id)
+                    setSelectedCategory(null)
+                  }}
+                  className={cn(
+                    'text-sm font-semibold transition-all pb-1 border-b-2 shrink-0',
+                    selectedGame === game.id
+                      ? 'text-[#00f5ff] border-[#00f5ff]'
+                      : 'text-[rgba(180,200,255,0.55)] border-transparent hover:text-[rgba(180,200,255,0.85)]'
+                  )}
+                >
+                  {game.nameCn}
+                </button>
+              ))}
+            </div>
+          </ScrollArea>
+        </div>
+
+        {/* Category Chips */}
+        <div className="bg-[rgba(5,8,16,0.6)] border-b border-[rgba(0,245,255,0.08)]">
+          <ScrollArea className="whitespace-nowrap">
+            <div className="flex px-4 py-2.5 gap-2">
               <button
-                key={game.id}
-                onClick={() => {
-                  setSelectedGame(game.id)
-                  setSelectedCategory(null)
-                }}
+                onClick={() => setSelectedCategory(null)}
                 className={cn(
-                  'text-sm font-semibold transition-all pb-1 border-b-2',
-                  selectedGame === game.id 
-                    ? 'text-[#00f5ff] border-[#00f5ff]' 
-                    : 'text-[rgba(180,200,255,0.55)] border-transparent hover:text-[rgba(180,200,255,0.85)]'
+                  'px-3 py-1.5 rounded-full text-xs font-medium border transition-all shrink-0',
+                  selectedCategory === null
+                    ? 'bg-[rgba(0,245,255,0.15)] text-[#00f5ff] border-[rgba(0,245,255,0.3)]'
+                    : 'bg-[rgba(0,245,255,0.05)] text-[rgba(180,200,255,0.7)] border-[rgba(0,245,255,0.1)] hover:border-[rgba(0,245,255,0.2)]'
                 )}
               >
-                {game.nameCn}
+                全部
               </button>
-            ))}
-          </div>
-        </ScrollArea>
+              {categories.map((cat) => (
+                <button
+                  key={cat.id}
+                  onClick={() => setSelectedCategory(cat.id)}
+                  className={cn(
+                    'px-3 py-1.5 rounded-full text-xs font-medium border transition-all shrink-0',
+                    selectedCategory === cat.id
+                      ? 'bg-[rgba(0,245,255,0.15)] text-[#00f5ff] border-[rgba(0,245,255,0.3)]'
+                      : 'bg-[rgba(0,245,255,0.05)] text-[rgba(180,200,255,0.7)] border-[rgba(0,245,255,0.1)] hover:border-[rgba(0,245,255,0.2)]'
+                  )}
+                >
+                  {cat.name}
+                </button>
+              ))}
+            </div>
+          </ScrollArea>
+        </div>
       </div>
 
       <div className="max-w-7xl mx-auto flex">
-        {/* Desktop Sidebar */}
+        {/* ========== DESKTOP SIDEBAR (unchanged) ========== */}
         <aside className="hidden lg:block w-60 shrink-0 glass-card rounded-2xl mr-6 min-h-[calc(100vh-8rem)] border-[rgba(0,245,255,0.12)]">
           <div className="p-5 border-b border-[rgba(0,245,255,0.1)]">
             <h2 className="font-bold text-white tracking-wide" style={{ fontFamily: 'var(--font-orbitron)' }}>游戏专区</h2>
@@ -121,8 +157,8 @@ function CategoriesContent() {
                     }}
                     className={cn(
                       'w-full text-left px-4 py-2.5 rounded-xl text-sm font-semibold mb-1 transition-all',
-                      selectedGame === game.id 
-                        ? 'bg-[rgba(0,245,255,0.12)] text-[#00f5ff] shadow-[0_0_12px_rgba(0,245,255,0.1)]' 
+                      selectedGame === game.id
+                        ? 'bg-[rgba(0,245,255,0.12)] text-[#00f5ff] shadow-[0_0_12px_rgba(0,245,255,0.1)]'
                         : 'text-[rgba(216,232,255,0.75)] hover:bg-[rgba(0,245,255,0.05)] hover:text-white'
                     )}
                   >
@@ -148,30 +184,10 @@ function CategoriesContent() {
           </ScrollArea>
         </aside>
 
-        {/* Mobile Category List */}
-        <div className="lg:hidden w-24 shrink-0 glass-card min-h-screen border-y-0 border-l-0 rounded-none border-r-[rgba(0,245,255,0.1)]">
-          <div className="py-2">
-            {categories.map((cat) => (
-              <button
-                key={cat.id}
-                onClick={() => setSelectedCategory(cat.id)}
-                className={cn(
-                  'w-full text-left px-3 py-3.5 text-sm border-l-2 transition-all',
-                  selectedCategory === cat.id
-                    ? 'text-[#00f5ff] border-[#00f5ff] bg-[rgba(0,245,255,0.06)] font-medium'
-                    : 'text-[rgba(180,200,255,0.6)] border-transparent hover:text-[rgba(180,200,255,0.85)]'
-                )}
-              >
-                {cat.name}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Product List */}
+        {/* ========== PRODUCT LIST ========== */}
         <main className="flex-1 p-3 lg:p-0">
-          <div className="flex items-center justify-between mb-5 lg:mb-6">
-            <h2 className="text-lg font-bold text-white tracking-wide" style={{ fontFamily: 'var(--font-orbitron)' }}>
+          <div className="flex items-center justify-between mb-4 lg:mb-6">
+            <h2 className="text-base lg:text-lg font-bold text-white tracking-wide" style={{ fontFamily: 'var(--font-orbitron)' }}>
               {selectedCategory
                 ? categories.find((c) => c.id === selectedCategory)?.name || '商品列表'
                 : '全部商品'}
@@ -181,11 +197,12 @@ function CategoriesContent() {
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          {/* Desktop: 3 columns | Mobile: full width stacked cards */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 lg:gap-4">
             {products.map((product) => (
               <Link key={product.id} href={`/products/${product.id}`}>
-                <Card className="flex gap-4 p-4 glass-card hover:border-[rgba(0,245,255,0.35)] hover:shadow-[0_16px_40px_rgba(0,0,0,0.35),0_0_20px_rgba(0,245,255,0.08)] transition-all cursor-pointer border-0">
-                  <div className="w-24 h-24 lg:w-28 lg:h-28 rounded-xl bg-gray-900 shrink-0 overflow-hidden relative border border-[rgba(0,245,255,0.1)]">
+                <Card className="flex gap-3 lg:gap-4 p-3 lg:p-4 glass-card hover:border-[rgba(0,245,255,0.35)] hover:shadow-[0_16px_40px_rgba(0,0,0,0.35),0_0_20px_rgba(0,245,255,0.08)] transition-all cursor-pointer border-0">
+                  <div className="w-20 h-20 lg:w-28 lg:h-28 rounded-xl bg-gray-900 shrink-0 overflow-hidden relative border border-[rgba(0,245,255,0.1)]">
                     {product.imageUrl && (
                       <Image
                         src={product.imageUrl}
@@ -195,19 +212,19 @@ function CategoriesContent() {
                       />
                     )}
                   </div>
-                  <div className="flex-1 min-w-0 flex flex-col justify-between py-1">
+                  <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5 lg:py-1">
                     <div>
                       <h3 className="font-semibold line-clamp-2 text-sm lg:text-base text-[rgba(232,238,255,0.95)]">{product.name}</h3>
-                      <span className="inline-block mt-2 text-[10px] px-2 py-0.5 rounded-md bg-[rgba(0,245,255,0.08)] text-[#00f5ff] border border-[rgba(0,245,255,0.15)]">{product.game.nameCn}</span>
+                      <span className="inline-block mt-1.5 lg:mt-2 text-[10px] px-2 py-0.5 rounded-md bg-[rgba(0,245,255,0.08)] text-[#00f5ff] border border-[rgba(0,245,255,0.15)]">{product.game.nameCn}</span>
                     </div>
-                    <div className="flex items-end justify-between">
+                    <div className="flex items-end justify-between mt-1">
                       <div>
-                        <span className="text-[#00f5ff] font-bold text-lg font-[family-name:var(--font-orbitron)]">¥{product.basePrice}</span>
+                        <span className="text-[#00f5ff] font-bold text-base lg:text-lg font-[family-name:var(--font-orbitron)]">¥{product.basePrice}</span>
                         {product.originalPrice && (
                           <span className="text-xs text-[rgba(180,200,255,0.35)] line-through ml-2">¥{product.originalPrice}</span>
                         )}
                       </div>
-                      <span className="text-xs text-[rgba(180,200,255,0.45)]">销量 {product.salesCount}</span>
+                      <span className="text-[10px] lg:text-xs text-[rgba(180,200,255,0.45)]">销量 {product.salesCount}</span>
                     </div>
                   </div>
                 </Card>

@@ -74,7 +74,9 @@ export default function LoginPage() {
         if (data.data.level === 'ADMIN') {
           window.location.href = '/admin'
         } else if (data.data.level === 'SELLER') {
-          window.location.href = '/seller/dashboard'
+          toast.error('打手账号请使用打手登录入口')
+          setLoading(false)
+          return
         } else {
           window.location.href = '/profile'
         }
@@ -174,7 +176,12 @@ export default function LoginPage() {
             <Link href="/register" className="text-[#00f5ff] hover:text-[#7df9ff] transition-colors">
               注册账号
             </Link>
-            <Link href="/" className="text-[rgba(180,200,255,0.55)] hover:text-[#00f5ff] transition-colors">
+            <Link href="/seller/login" className="text-[#00f5ff] hover:text-[#7df9ff] transition-colors">
+              打手登录
+            </Link>
+          </div>
+          <div className="mt-3 text-center">
+            <Link href="/" className="text-sm text-[rgba(180,200,255,0.55)] hover:text-[#00f5ff] transition-colors">
               返回首页
             </Link>
           </div>

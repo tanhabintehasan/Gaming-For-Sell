@@ -65,12 +65,12 @@ export default function SellerDashboardPage() {
       .then((res) => {
         if (res.success) {
           if (res.data.level !== 'SELLER' && res.data.level !== 'ADMIN') {
-            router.push('/profile')
+            router.push('/seller/login')
             return
           }
           setUser(res.data)
         } else {
-          router.push('/login')
+          router.push('/seller/login')
         }
       })
 

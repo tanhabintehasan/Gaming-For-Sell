@@ -2,24 +2,49 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Home, Gamepad2, Users, User, Headphones, UserPlus } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { Home, Gamepad2, Users, User, Headphones, UserPlus, Package, TrendingUp, Wallet } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { fetchAuthMe } from '@/lib/auth-client'
 
-const navItems = [
+interface AuthUser {
+  id: string
+  username: string
+  level: string
+}
+
+const customerNavItems = [
   { href: '/', label: '首页', icon: Home },
   { href: '/categories', label: '专区', icon: Gamepad2 },
   { href: '/sellers', label: '挑人', icon: Users },
   { href: '/support', label: '客服', icon: Headphones },
   { href: '/profile', label: '我的', icon: User },
-  { href: '/register', label: '注册', icon: UserPlus },
+]
+
+const sellerNavItems = [
+  { href: '/', label: '首页', icon: Home },
+  { href: '/seller/dashboard', label: '后台', icon: Gamepad2 },
+  { href: '/seller/orders', label: '订单', icon: Package },
+  { href: '/seller/earnings', label: '收益', icon: TrendingUp },
+  { href: '/seller/profile', label: '我的', icon: User },
 ]
 
 export function MobileNav() {
   const pathname = usePathname()
+  const [user, setUser] = useState<AuthUser | null>(null)
 
-  if (pathname?.startsWith('/admin') || pathname?.startsWith('/backstage') || pathname === '/login') {
+  useEffect(() => {
+    fetchAuthMe().then((res) => {
+      if (res.success) setUser(res.data)
+    })
+  }, [pathname])
+
+  if (pathname?.startsWith('/admin') || pathname?.startsWith('/backstage') || pathname === '/login' || pathname === '/seller/login') {
     return null
   }
+
+  const isSeller = user && (user.level === 'SELLER' || user.level === 'ADMIN')
+  const navItems = isSeller ? sellerNavItems : customerNavItems
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 lg:hidden">
@@ -34,8 +59,8 @@ export function MobileNav() {
                   href={item.href}
                   className={cn(
                     'flex flex-col items-center justify-center gap-1 w-full h-full rounded-xl transition-all duration-300',
-                    isActive 
-                      ? 'text-[#00f5ff]' 
+                    isActive
+                      ? 'text-[#00f5ff]'
                       : 'text-[rgba(180,200,255,0.5)] hover:text-[rgba(180,200,255,0.8)]'
                   )}
                 >
@@ -44,6 +69,21 @@ export function MobileNav() {
                 </Link>
               )
             })}
+            {/* Show register button only for non-logged-in customers */}
+            {!user && !isSeller && (
+              <Link
+                href="/register"
+                className={cn(
+                  'flex flex-col items-center justify-center gap-1 w-full h-full rounded-xl transition-all duration-300',
+                  pathname === '/register'
+                    ? 'text-[#00f5ff]'
+                    : 'text-[rgba(180,200,255,0.5)] hover:text-[rgba(180,200,255,0.8)]'
+                )}
+              >
+                <UserPlus className={cn('w-5 h-5 transition-all', pathname === '/register' && 'drop-shadow-[0_0_8px_rgba(0,245,255,0.6)]')} />
+                <span className="text-[11px] font-medium tracking-wide">注册</span>
+              </Link>
+            )}
           </div>
         </div>
       </div>

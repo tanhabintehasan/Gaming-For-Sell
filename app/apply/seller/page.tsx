@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { ChevronLeft, Send, Gamepad2, User, FileText } from 'lucide-react'
+import { ChevronLeft, Send, Gamepad2, User, FileText, CheckCircle2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -38,6 +38,16 @@ export default function SellerApplyPage() {
     experience: '',
   })
   const [selectedGames, setSelectedGames] = useState<string[]>([])
+
+  // Pre-fill form when user data loads
+  useEffect(() => {
+    if (user) {
+      setForm((prev) => ({
+        ...prev,
+        username: user.username || prev.username,
+      }))
+    }
+  }, [user])
 
   useEffect(() => {
     fetchAuthMe()
@@ -84,7 +94,7 @@ export default function SellerApplyPage() {
     <div className="min-h-screen relative">
       <header className="border-b border-[rgba(0,245,255,0.1)] bg-[rgba(5,8,16,0.8)] backdrop-blur-xl sticky top-0 z-50">
         <div className="max-w-3xl mx-auto px-4 h-14 flex items-center gap-3">
-          <Link href="/">
+          <Link href="/apply">
             <ChevronLeft className="w-5 h-5 text-[rgba(180,200,255,0.7)] hover:text-[#00f5ff] transition-colors" />
           </Link>
           <h1 className="font-bold text-lg text-white" style={{ fontFamily: 'var(--font-orbitron)' }}>申请成为打手</h1>
@@ -92,6 +102,33 @@ export default function SellerApplyPage() {
       </header>
 
       <main className="max-w-3xl mx-auto px-4 py-8">
+        {/* Process steps */}
+        <div className="flex items-center justify-between mb-8 px-2">
+          {[
+            { label: '了解流程', done: true },
+            { label: '填写资料', done: false },
+            { label: '等待审核', done: false },
+            { label: '开始接单', done: false },
+          ].map((s, i, arr) => (
+            <div key={s.label} className="flex items-center flex-1 last:flex-none">
+              <div className="flex flex-col items-center gap-1.5">
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border ${
+                  i === 1
+                    ? 'bg-[rgba(0,245,255,0.2)] text-[#00f5ff] border-[rgba(0,245,255,0.4)]'
+                    : i < 1
+                    ? 'bg-[rgba(74,222,128,0.15)] text-[#4ade80] border-[rgba(74,222,128,0.3)]'
+                    : 'bg-[rgba(0,245,255,0.05)] text-[rgba(180,200,255,0.4)] border-[rgba(0,245,255,0.12)]'
+                }`}>
+                  {i < 1 ? <CheckCircle2 className="w-4 h-4" /> : i + 1}
+                </div>
+                <span className={`text-[10px] ${i === 1 ? 'text-[#00f5ff]' : 'text-[rgba(180,200,255,0.5)]'}`}>{s.label}</span>
+              </div>
+              {i < arr.length - 1 && (
+                <div className="flex-1 h-px bg-[rgba(0,245,255,0.12)] mx-2 mb-5" />
+              )}
+            </div>
+          ))}
+        </div>
         {user && (user.level === 'SELLER' || user.level === 'ADMIN') ? (
           <Card className="p-10 text-center glass-card border-0">
             <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-[rgba(0,245,255,0.08)] border border-[rgba(0,245,255,0.2)] flex items-center justify-center text-[#00f5ff] text-2xl font-black shadow-[0_0_24px_rgba(0,245,255,0.15)]" style={{ fontFamily: 'var(--font-orbitron)' }}>

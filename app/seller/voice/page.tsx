@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState, useRef } from 'react'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { ChevronLeft, Mic, Upload, Play, Pause } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -9,6 +10,7 @@ import { toast } from 'sonner'
 import { fetchAuthMe } from '@/lib/auth-client'
 
 export default function SellerVoicePage() {
+  const router = useRouter()
   const [profile, setProfile] = useState<{ voiceIntroUrl?: string | null } | null>(null)
   const [uploading, setUploading] = useState(false)
   const [playing, setPlaying] = useState(false)
@@ -18,9 +20,13 @@ export default function SellerVoicePage() {
   useEffect(() => {
     fetchAuthMe()
       .then((res) => {
-        if (res.success) setProfile(res.data.sellerProfile || {})
+        if (!res.success || (res.data.level !== 'SELLER' && res.data.level !== 'ADMIN')) {
+          router.push('/seller/login')
+          return
+        }
+        setProfile(res.data.sellerProfile || {})
       })
-  }, [])
+  }, [router])
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]

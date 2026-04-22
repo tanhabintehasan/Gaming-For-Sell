@@ -4,7 +4,7 @@ import bcrypt from 'bcryptjs'
 const prisma = new PrismaClient()
 
 async function main() {
-  // Clear existing data
+  // Clear existing data in dependency-safe order
   await prisma.supportReply.deleteMany()
   await prisma.supportTicket.deleteMany()
   await prisma.review.deleteMany()
@@ -25,7 +25,7 @@ async function main() {
 
   const hashedPassword = await bcrypt.hash('123456', 10)
 
-  // Create admin user
+  // Admin user
   await prisma.user.create({
     data: {
       phone: '13800138000',
@@ -37,9 +37,11 @@ async function main() {
     },
   })
 
-  // Create games - popular in Chinese market
-  const games = await Promise.all([
-    prisma.game.create({
+  // Games - sequential instead of Promise.all
+  const games = []
+
+  games.push(
+    await prisma.game.create({
       data: {
         nameCn: '三角洲行动',
         nameEn: 'Delta Force',
@@ -51,8 +53,11 @@ async function main() {
         sortOrder: 10,
         isActive: true,
       },
-    }),
-    prisma.game.create({
+    })
+  )
+
+  games.push(
+    await prisma.game.create({
       data: {
         nameCn: '王者荣耀',
         nameEn: 'Honor of Kings',
@@ -64,8 +69,11 @@ async function main() {
         sortOrder: 9,
         isActive: true,
       },
-    }),
-    prisma.game.create({
+    })
+  )
+
+  games.push(
+    await prisma.game.create({
       data: {
         nameCn: '和平精英',
         nameEn: 'Game for Peace',
@@ -77,8 +85,11 @@ async function main() {
         sortOrder: 8,
         isActive: true,
       },
-    }),
-    prisma.game.create({
+    })
+  )
+
+  games.push(
+    await prisma.game.create({
       data: {
         nameCn: '英雄联盟',
         nameEn: 'League of Legends',
@@ -90,8 +101,11 @@ async function main() {
         sortOrder: 7,
         isActive: true,
       },
-    }),
-    prisma.game.create({
+    })
+  )
+
+  games.push(
+    await prisma.game.create({
       data: {
         nameCn: '无畏契约',
         nameEn: 'Valorant',
@@ -103,8 +117,11 @@ async function main() {
         sortOrder: 6,
         isActive: true,
       },
-    }),
-    prisma.game.create({
+    })
+  )
+
+  games.push(
+    await prisma.game.create({
       data: {
         nameCn: '原神',
         nameEn: 'Genshin Impact',
@@ -116,8 +133,11 @@ async function main() {
         sortOrder: 5,
         isActive: true,
       },
-    }),
-    prisma.game.create({
+    })
+  )
+
+  games.push(
+    await prisma.game.create({
       data: {
         nameCn: 'CS:GO',
         nameEn: 'Counter-Strike 2',
@@ -129,8 +149,11 @@ async function main() {
         sortOrder: 4,
         isActive: true,
       },
-    }),
-    prisma.game.create({
+    })
+  )
+
+  games.push(
+    await prisma.game.create({
       data: {
         nameCn: '永劫无间',
         nameEn: 'Naraka: Bladepoint',
@@ -142,40 +165,39 @@ async function main() {
         sortOrder: 3,
         isActive: true,
       },
-    }),
-  ])
+    })
+  )
 
-  // Create categories for Delta Force
   const deltaForce = games[0]
-  const dfCategories = await Promise.all([
-    prisma.gameCategory.create({ data: { gameId: deltaForce.id, name: '新品专区', slug: 'new-arrivals', iconUrl: 'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=100&h=100&fit=crop', sortOrder: 1, defaultHourlyRate: 100 } }),
-    prisma.gameCategory.create({ data: { gameId: deltaForce.id, name: '体验专区', slug: 'experience', iconUrl: 'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=100&h=100&fit=crop', sortOrder: 2, defaultHourlyRate: 50 } }),
-    prisma.gameCategory.create({ data: { gameId: deltaForce.id, name: '任务专区', slug: 'missions', iconUrl: 'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=100&h=100&fit=crop', sortOrder: 3, defaultHourlyRate: 120 } }),
-    prisma.gameCategory.create({ data: { gameId: deltaForce.id, name: '航天专区', slug: 'aerospace', iconUrl: 'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=100&h=100&fit=crop', sortOrder: 4, defaultHourlyRate: 150 } }),
-    prisma.gameCategory.create({ data: { gameId: deltaForce.id, name: '女陪专区', slug: 'female-companions', iconUrl: 'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=100&h=100&fit=crop', sortOrder: 5, defaultHourlyRate: 200 } }),
-    prisma.gameCategory.create({ data: { gameId: deltaForce.id, name: '趣味专区', slug: 'fun', iconUrl: 'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=100&h=100&fit=crop', sortOrder: 6, defaultHourlyRate: 80 } }),
-    prisma.gameCategory.create({ data: { gameId: deltaForce.id, name: '监狱专区', slug: 'prison', iconUrl: 'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=100&h=100&fit=crop', sortOrder: 7, defaultHourlyRate: 100 } }),
-    prisma.gameCategory.create({ data: { gameId: deltaForce.id, name: '陪玩专区', slug: 'companion-play', iconUrl: 'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=100&h=100&fit=crop', sortOrder: 8, defaultHourlyRate: 150 } }),
-    prisma.gameCategory.create({ data: { gameId: deltaForce.id, name: '大红专区', slug: 'big-red', iconUrl: 'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=100&h=100&fit=crop', sortOrder: 9, defaultHourlyRate: 180 } }),
-    prisma.gameCategory.create({ data: { gameId: deltaForce.id, name: '清图专区', slug: 'map-clear', iconUrl: 'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=100&h=100&fit=crop', sortOrder: 10, defaultHourlyRate: 288 } }),
-    prisma.gameCategory.create({ data: { gameId: deltaForce.id, name: '手游专区', slug: 'mobile', iconUrl: 'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=100&h=100&fit=crop', sortOrder: 11, defaultHourlyRate: 100 } }),
-    prisma.gameCategory.create({ data: { gameId: deltaForce.id, name: '小金专区', slug: 'small-gold', iconUrl: 'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=100&h=100&fit=crop', sortOrder: 12, defaultHourlyRate: 120 } }),
-    prisma.gameCategory.create({ data: { gameId: deltaForce.id, name: '包出专区', slug: 'guaranteed', iconUrl: 'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=100&h=100&fit=crop', sortOrder: 13, defaultHourlyRate: 300 } }),
-    prisma.gameCategory.create({ data: { gameId: deltaForce.id, name: '休闲娱乐', slug: 'leisure', iconUrl: 'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=100&h=100&fit=crop', sortOrder: 14, defaultHourlyRate: 80 } }),
-  ])
-
-  // Create categories for Honor of Kings
   const hok = games[1]
-  const hokCategories = await Promise.all([
-    prisma.gameCategory.create({ data: { gameId: hok.id, name: '排位上分', slug: 'rank-boosting', iconUrl: 'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=100&h=100&fit=crop', sortOrder: 1, defaultHourlyRate: 80 } }),
-    prisma.gameCategory.create({ data: { gameId: hok.id, name: '英雄教学', slug: 'hero-coaching', iconUrl: 'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=100&h=100&fit=crop', sortOrder: 2, defaultHourlyRate: 60 } }),
-    prisma.gameCategory.create({ data: { gameId: hok.id, name: '开黑陪玩', slug: 'team-companion', iconUrl: 'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=100&h=100&fit=crop', sortOrder: 3, defaultHourlyRate: 50 } }),
-    prisma.gameCategory.create({ data: { gameId: hok.id, name: '巅峰赛', slug: 'peak-match', iconUrl: 'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=100&h=100&fit=crop', sortOrder: 4, defaultHourlyRate: 120 } }),
-    prisma.gameCategory.create({ data: { gameId: hok.id, name: '国标代打', slug: 'national-badge', iconUrl: 'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=100&h=100&fit=crop', sortOrder: 5, defaultHourlyRate: 200 } }),
-    prisma.gameCategory.create({ data: { gameId: hok.id, name: '娱乐模式', slug: 'casual-mode', iconUrl: 'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=100&h=100&fit=crop', sortOrder: 6, defaultHourlyRate: 40 } }),
-  ])
 
-  // Create seller users
+  // Delta Force categories - sequential
+  const dfCategories = []
+  dfCategories.push(await prisma.gameCategory.create({ data: { gameId: deltaForce.id, name: '新品专区', slug: 'new-arrivals', iconUrl: 'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=100&h=100&fit=crop', sortOrder: 1, defaultHourlyRate: 100 } }))
+  dfCategories.push(await prisma.gameCategory.create({ data: { gameId: deltaForce.id, name: '体验专区', slug: 'experience', iconUrl: 'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=100&h=100&fit=crop', sortOrder: 2, defaultHourlyRate: 50 } }))
+  dfCategories.push(await prisma.gameCategory.create({ data: { gameId: deltaForce.id, name: '任务专区', slug: 'missions', iconUrl: 'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=100&h=100&fit=crop', sortOrder: 3, defaultHourlyRate: 120 } }))
+  dfCategories.push(await prisma.gameCategory.create({ data: { gameId: deltaForce.id, name: '航天专区', slug: 'aerospace', iconUrl: 'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=100&h=100&fit=crop', sortOrder: 4, defaultHourlyRate: 150 } }))
+  dfCategories.push(await prisma.gameCategory.create({ data: { gameId: deltaForce.id, name: '女陪专区', slug: 'female-companions', iconUrl: 'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=100&h=100&fit=crop', sortOrder: 5, defaultHourlyRate: 200 } }))
+  dfCategories.push(await prisma.gameCategory.create({ data: { gameId: deltaForce.id, name: '趣味专区', slug: 'fun', iconUrl: 'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=100&h=100&fit=crop', sortOrder: 6, defaultHourlyRate: 80 } }))
+  dfCategories.push(await prisma.gameCategory.create({ data: { gameId: deltaForce.id, name: '监狱专区', slug: 'prison', iconUrl: 'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=100&h=100&fit=crop', sortOrder: 7, defaultHourlyRate: 100 } }))
+  dfCategories.push(await prisma.gameCategory.create({ data: { gameId: deltaForce.id, name: '陪玩专区', slug: 'companion-play', iconUrl: 'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=100&h=100&fit=crop', sortOrder: 8, defaultHourlyRate: 150 } }))
+  dfCategories.push(await prisma.gameCategory.create({ data: { gameId: deltaForce.id, name: '大红专区', slug: 'big-red', iconUrl: 'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=100&h=100&fit=crop', sortOrder: 9, defaultHourlyRate: 180 } }))
+  dfCategories.push(await prisma.gameCategory.create({ data: { gameId: deltaForce.id, name: '清图专区', slug: 'map-clear', iconUrl: 'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=100&h=100&fit=crop', sortOrder: 10, defaultHourlyRate: 288 } }))
+  dfCategories.push(await prisma.gameCategory.create({ data: { gameId: deltaForce.id, name: '手游专区', slug: 'mobile', iconUrl: 'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=100&h=100&fit=crop', sortOrder: 11, defaultHourlyRate: 100 } }))
+  dfCategories.push(await prisma.gameCategory.create({ data: { gameId: deltaForce.id, name: '小金专区', slug: 'small-gold', iconUrl: 'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=100&h=100&fit=crop', sortOrder: 12, defaultHourlyRate: 120 } }))
+  dfCategories.push(await prisma.gameCategory.create({ data: { gameId: deltaForce.id, name: '包出专区', slug: 'guaranteed', iconUrl: 'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=100&h=100&fit=crop', sortOrder: 13, defaultHourlyRate: 300 } }))
+  dfCategories.push(await prisma.gameCategory.create({ data: { gameId: deltaForce.id, name: '休闲娱乐', slug: 'leisure', iconUrl: 'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=100&h=100&fit=crop', sortOrder: 14, defaultHourlyRate: 80 } }))
+
+  // Honor of Kings categories - sequential
+  const hokCategories = []
+  hokCategories.push(await prisma.gameCategory.create({ data: { gameId: hok.id, name: '排位上分', slug: 'rank-boosting', iconUrl: 'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=100&h=100&fit=crop', sortOrder: 1, defaultHourlyRate: 80 } }))
+  hokCategories.push(await prisma.gameCategory.create({ data: { gameId: hok.id, name: '英雄教学', slug: 'hero-coaching', iconUrl: 'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=100&h=100&fit=crop', sortOrder: 2, defaultHourlyRate: 60 } }))
+  hokCategories.push(await prisma.gameCategory.create({ data: { gameId: hok.id, name: '开黑陪玩', slug: 'team-companion', iconUrl: 'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=100&h=100&fit=crop', sortOrder: 3, defaultHourlyRate: 50 } }))
+  hokCategories.push(await prisma.gameCategory.create({ data: { gameId: hok.id, name: '巅峰赛', slug: 'peak-match', iconUrl: 'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=100&h=100&fit=crop', sortOrder: 4, defaultHourlyRate: 120 } }))
+  hokCategories.push(await prisma.gameCategory.create({ data: { gameId: hok.id, name: '国标代打', slug: 'national-badge', iconUrl: 'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=100&h=100&fit=crop', sortOrder: 5, defaultHourlyRate: 200 } }))
+  hokCategories.push(await prisma.gameCategory.create({ data: { gameId: hok.id, name: '娱乐模式', slug: 'casual-mode', iconUrl: 'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=100&h=100&fit=crop', sortOrder: 6, defaultHourlyRate: 40 } }))
+
+  // Seller users + profiles
   const sellerData = [
     { username: '凌速-陈尾鱼', phone: '13800138001', gender: 'MALE', age: 22, location: '广州市', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=seller1' },
     { username: '凌速-小浩', phone: '13800138002', gender: 'MALE', age: 22, location: '重庆市', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=seller2' },
@@ -187,7 +209,8 @@ async function main() {
     { username: '凌速-萌萌', phone: '13800138008', gender: 'FEMALE', age: 19, location: '杭州市', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=seller8' },
   ]
 
-  const sellers: unknown[] = []
+  const sellers: Array<{ user: { id: string }, profile: { id: string } }> = []
+
   for (const s of sellerData) {
     const user = await prisma.user.create({
       data: {
@@ -195,7 +218,7 @@ async function main() {
         username: s.username,
         passwordHash: hashedPassword,
         level: 'SELLER',
-        gender: s.gender,
+        gender: s.gender as any,
         age: s.age,
         location: s.location,
         avatar: s.avatar,
@@ -220,7 +243,6 @@ async function main() {
       },
     })
 
-    // Add game services for each seller
     const gameServices = []
     for (const game of games.slice(0, 4)) {
       if (Math.random() > 0.2) {
@@ -237,11 +259,15 @@ async function main() {
         })
       }
     }
-    await prisma.sellerGameService.createMany({ data: gameServices })
+
+    if (gameServices.length > 0) {
+      await prisma.sellerGameService.createMany({ data: gameServices })
+    }
+
     sellers.push({ user, profile })
   }
 
-  // Create products for Delta Force
+  // Delta Force products
   const dfProducts = [
     { name: '绝密基础护航单288保底1288w', category: dfCategories[0], price: 288, original: 338, image: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=400&h=500&fit=crop', sales: 1478, views: 32060 },
     { name: '速凌电竞-十分钟清图单-1888R保3888W', category: dfCategories[9], price: 1888, original: 2088, image: 'https://images.unsplash.com/photo-1563089145-599997674d42?w=400&h=500&fit=crop', sales: 76, views: 49310 },
@@ -271,7 +297,7 @@ async function main() {
     })
   }
 
-  // Create products for Honor of Kings
+  // Honor of Kings products
   const hokProducts = [
     { name: '王者段位代打-钻石到星耀', category: hokCategories[0], price: 88, original: 128, image: 'https://images.unsplash.com/photo-1560253023-3ec5d502959f?w=400&h=500&fit=crop', sales: 2341, views: 89000 },
     { name: '李白英雄教学-1对1辅导', category: hokCategories[1], price: 58, original: 88, image: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=400&h=500&fit=crop', sales: 567, views: 34000 },
@@ -297,7 +323,6 @@ async function main() {
     })
   }
 
-  // Create config pages
   await prisma.adminConfig.createMany({
     data: [
       { configKey: 'site_name', configValue: '速凌电竞', category: 'general', description: '网站名称' },
@@ -320,7 +345,6 @@ async function main() {
     ],
   })
 
-  // Create content pages
   await prisma.contentPage.createMany({
     data: [
       { slug: 'order-notice', title: '下单须知', rawContent: '1. 下单前请确认游戏账号信息正确\n2. 服务开始后不支持退款\n3. 如有问题请联系客服处理', isPublished: true, publishedAt: new Date() },
