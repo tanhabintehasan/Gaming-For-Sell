@@ -32,6 +32,7 @@ function CreateOrderContent() {
   const initialSellerId = searchParams?.get('seller')
 
   const [product, setProduct] = useState<Product | null>(null)
+  const [productError, setProductError] = useState<string | null>(null)
   const [, setUser] = useState<User | null>(null)
   const [quantity, setQuantity] = useState(1)
   const [platform, setPlatform] = useState('MOBILE')
@@ -59,8 +60,17 @@ function CreateOrderContent() {
       fetch(`/api/products/${productId}`)
         .then((r) => r.json())
         .then((res) => {
-          if (res.success) setProduct(res.data)
+          if (res.success) {
+            setProduct(res.data)
+          } else {
+            setProductError(res.message || '商品不存在')
+          }
         })
+        .catch(() => {
+          setProductError('加载商品失败，请检查网络')
+        })
+    } else {
+      setProductError('缺少商品参数，请从商品页进入')
     }
   }, [productId, router])
 
@@ -95,6 +105,21 @@ function CreateOrderContent() {
     } finally {
       setLoading(false)
     }
+  }
+
+  if (productError) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center px-4">
+        <div className="text-[rgba(180,200,255,0.5)] mb-4">{productError}</div>
+        <Button
+          variant="outline"
+          className="rounded-xl border-[rgba(0,245,255,0.2)] bg-[rgba(0,245,255,0.05)] text-[#00f5ff] hover:bg-[rgba(0,245,255,0.1)]"
+          onClick={() => router.push('/')}
+        >
+          返回首页
+        </Button>
+      </div>
+    )
   }
 
   if (!product) {
@@ -209,7 +234,7 @@ function CreateOrderContent() {
       </div>
 
       {/* Bottom Bar */}
-      <div className="fixed bottom-0 left-0 right-0 z-40 p-4 lg:max-w-2xl lg:mx-auto lg:static lg:mt-8 lg:bg-transparent">
+      <div className="fixed bottom-0 left-0 right-0 z-[60] p-4 lg:max-w-2xl lg:mx-auto lg:static lg:mt-8 lg:bg-transparent">
         <div className="glass-card rounded-2xl p-4 flex items-center justify-between lg:border-0 lg:bg-transparent lg:p-0">
           <div className="lg:hidden">
             <span className="text-[rgba(180,200,255,0.55)] text-sm">实付金额</span>

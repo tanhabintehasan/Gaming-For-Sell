@@ -368,7 +368,7 @@ export default function ProductDetailPage() {
       </div>
 
       {/* Bottom Bar */}
-      <div className="fixed bottom-0 left-0 right-0 z-40 p-4 lg:max-w-4xl lg:mx-auto lg:static lg:mt-8 lg:p-0 lg:bg-transparent">
+      <div className="fixed bottom-0 left-0 right-0 z-[60] p-4 lg:max-w-4xl lg:mx-auto lg:static lg:mt-8 lg:p-0 lg:bg-transparent">
         <div className="glass-card rounded-2xl p-3 flex items-center gap-3 lg:border-0 lg:bg-transparent lg:p-0">
           <Button variant="outline" className="flex-1 h-12 rounded-xl border-[rgba(0,245,255,0.2)] bg-[rgba(0,245,255,0.05)] text-[#e8eeff] hover:bg-[rgba(0,245,255,0.1)] hover:border-[rgba(0,245,255,0.35)]" onClick={() => router.push('/')}>
             <Store className="w-4 h-4 mr-2" />

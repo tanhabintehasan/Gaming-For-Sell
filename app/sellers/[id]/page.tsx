@@ -196,7 +196,7 @@ export default function SellerDetailPage() {
         </Card>
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 z-40 p-4 lg:max-w-3xl lg:mx-auto lg:static lg:mt-2 lg:p-0 lg:bg-transparent">
+      <div className="fixed bottom-0 left-0 right-0 z-[60] p-4 lg:max-w-3xl lg:mx-auto lg:static lg:mt-2 lg:p-0 lg:bg-transparent">
         <div className="glass-card rounded-2xl p-3 flex items-center gap-3 lg:border-0 lg:bg-transparent lg:p-0">
           <Button
             className="flex-1 h-12 bg-gradient-to-r from-[#ff2244] to-[#ff6b00] hover:brightness-110 text-white rounded-xl font-bold shadow-[0_12px_28px_rgba(255,47,125,0.3)] hover:shadow-[0_16px_36px_rgba(255,47,125,0.4)] transition-all border-0"

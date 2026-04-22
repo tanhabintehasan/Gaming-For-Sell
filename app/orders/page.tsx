@@ -71,7 +71,7 @@ function OrdersContent() {
   }, [status, router])
 
   return (
-    <div className="relative min-h-screen lg:py-8">
+    <div className="relative min-h-screen lg:py-8 pb-24">
       <div className="max-w-4xl mx-auto px-4">
         <h1 className="text-lg font-bold py-4 lg:py-0 lg:mb-6 text-white tracking-wide" style={{ fontFamily: 'var(--font-orbitron)' }}>
           我的订单 <span className="text-[#00f5ff]">ORDERS</span>

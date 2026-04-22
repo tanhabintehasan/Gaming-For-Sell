@@ -23,6 +23,7 @@ const customerNavItems = [
   { href: '/', label: '首页', icon: Home },
   { href: '/categories', label: '专区', icon: Gamepad2 },
   { href: '/sellers', label: '挑人', icon: Users },
+  { href: '/orders', label: '订单', icon: Package },
   { href: '/support', label: '客服', icon: Headphones },
   { href: '/profile', label: '我的', icon: User },
 ]
