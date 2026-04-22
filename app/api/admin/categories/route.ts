@@ -4,20 +4,25 @@ import { getAuthUser } from '@/lib/auth'
 import { successResponse, errorResponse } from '@/lib/api'
 
 export async function GET(request: NextRequest) {
-  const authUser = await getAuthUser()
-  if (!authUser || authUser.level !== 'ADMIN') {
-    return errorResponse('无权限', 403)
+  try {
+    const authUser = await getAuthUser()
+    if (!authUser || authUser.level !== 'ADMIN') {
+      return errorResponse('无权限', 403)
+    }
+
+    const { searchParams } = new URL(request.url)
+    const gameId = searchParams.get('gameId')
+
+    const categories = await prisma.gameCategory.findMany({
+      where: gameId ? { gameId } : {},
+      orderBy: { sortOrder: 'asc' },
+    })
+
+    return successResponse(categories)
+  } catch (error) {
+    console.error('Admin categories GET error:', error)
+    return errorResponse('加载分类列表失败', 500)
   }
-
-  const { searchParams } = new URL(request.url)
-  const gameId = searchParams.get('gameId')
-
-  const categories = await prisma.gameCategory.findMany({
-    where: gameId ? { gameId } : {},
-    orderBy: { sortOrder: 'asc' },
-  })
-
-  return successResponse(categories)
 }
 
 export async function POST(request: NextRequest) {

@@ -3,11 +3,12 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { ChevronLeft, MessageSquare, Ticket, Clock, CheckCircle2 } from 'lucide-react'
+import { ChevronLeft, MessageSquare, Ticket, Clock, CheckCircle2, LogOut } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { fetchAuthMe } from '@/lib/auth-client'
+import { toast } from 'sonner'
 
 interface Conversation {
   type: 'message' | 'ticket'
@@ -43,6 +44,7 @@ export default function AdminMessagesPage() {
           router.push('/backstage/admin/login')
         }
       })
+      .catch(() => {})
 
     fetch('/api/admin/messages')
       .then((r) => r.json())
@@ -50,6 +52,11 @@ export default function AdminMessagesPage() {
         if (res.success) {
           setConversations(res.data)
         }
+      })
+      .catch(() => {
+        toast.error('加载失败')
+      })
+      .finally(() => {
         setLoading(false)
       })
   }, [router])
@@ -65,11 +72,20 @@ export default function AdminMessagesPage() {
   return (
     <div className="min-h-screen relative">
       <header className="border-b border-[rgba(0,245,255,0.1)] bg-[rgba(5,8,16,0.8)] backdrop-blur-xl sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 h-14 flex items-center gap-3">
-          <Link href="/admin" className="text-white hover:text-[#00f5ff]">
-            <ChevronLeft className="w-5 h-5" />
-          </Link>
-          <h1 className="font-bold text-lg text-white tracking-wide" style={{ fontFamily: 'var(--font-orbitron)' }}>消息中心</h1>
+        <div className="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Link href="/admin" className="text-white hover:text-[#00f5ff]">
+              <ChevronLeft className="w-5 h-5" />
+            </Link>
+            <h1 className="font-bold text-lg text-white tracking-wide" style={{ fontFamily: 'var(--font-orbitron)' }}>消息中心</h1>
+          </div>
+          <button
+            onClick={() => fetch('/api/auth/logout', { method: 'POST' }).then(() => window.location.href = '/backstage/admin/login')}
+            className="text-sm text-[rgba(180,200,255,0.55)] hover:text-[#ff2244] transition-colors flex items-center gap-1"
+          >
+            <LogOut className="w-4 h-4" />
+            退出登录
+          </button>
         </div>
       </header>
 

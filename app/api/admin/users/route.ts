@@ -13,30 +13,35 @@ async function checkAdmin() {
 }
 
 export async function GET(request: NextRequest) {
-  const denied = await checkAdmin()
-  if (denied) return denied
+  try {
+    const denied = await checkAdmin()
+    if (denied) return denied
 
-  const { searchParams } = new URL(request.url)
-  const level = searchParams.get('level')
+    const { searchParams } = new URL(request.url)
+    const level = searchParams.get('level')
 
-  const where: Prisma.UserWhereInput = {}
-  if (level) where.level = level
+    const where: Prisma.UserWhereInput = {}
+    if (level) where.level = level
 
-  const users = await prisma.user.findMany({
-    where,
-    orderBy: { createdAt: 'desc' },
-    select: {
-      id: true,
-      username: true,
-      phone: true,
-      level: true,
-      avatar: true,
-      isActive: true,
-      createdAt: true,
-    },
-  })
+    const users = await prisma.user.findMany({
+      where,
+      orderBy: { createdAt: 'desc' },
+      select: {
+        id: true,
+        username: true,
+        phone: true,
+        level: true,
+        avatar: true,
+        isActive: true,
+        createdAt: true,
+      },
+    })
 
-  return successResponse(users)
+    return successResponse(users)
+  } catch (error) {
+    console.error('Admin users GET error:', error)
+    return errorResponse('加载用户列表失败', 500)
+  }
 }
 
 export async function POST(request: NextRequest) {

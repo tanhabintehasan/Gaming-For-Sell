@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { ChevronLeft } from 'lucide-react'
+import { ChevronLeft, LogOut } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -70,14 +70,18 @@ export default function AdminWithdrawalsPage() {
   }, [router])
 
   const loadWithdrawals = () => {
+    setLoading(true)
     fetch('/api/admin/withdrawals')
       .then((r) => r.json())
       .then((res) => {
         if (res.success) {
           setWithdrawals(res.data)
         }
-        setLoading(false)
       })
+      .catch(() => {
+        toast.error('加载失败')
+      })
+      .finally(() => setLoading(false))
   }
 
   const handleAction = async (status: string) => {
@@ -121,6 +125,14 @@ export default function AdminWithdrawalsPage() {
             <ChevronLeft className="w-5 h-5" />
           </Link>
           <h1 className="font-bold text-lg text-white tracking-wide" style={{ fontFamily: 'var(--font-orbitron)' }}>提现审核</h1>
+          <div className="flex-1" />
+          <button
+            onClick={() => fetch('/api/auth/logout', { method: 'POST' }).then(() => window.location.href = '/backstage/admin/login')}
+            className="text-sm text-[rgba(180,200,255,0.55)] hover:text-[#ff2244] transition-colors flex items-center gap-1"
+          >
+            <LogOut className="w-4 h-4" />
+            退出登录
+          </button>
         </div>
       </header>
 

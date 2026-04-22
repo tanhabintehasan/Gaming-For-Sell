@@ -32,29 +32,34 @@ const defaultConfigs = [
 ]
 
 export async function GET() {
-  const denied = await checkAdmin()
-  if (denied) return denied
+  try {
+    const denied = await checkAdmin()
+    if (denied) return denied
 
-  const existing = await prisma.adminConfig.findMany({
-    orderBy: { category: 'asc' },
-  })
+    const existing = await prisma.adminConfig.findMany({
+      orderBy: { category: 'asc' },
+    })
 
-  const existingMap = new Map(existing.map((c) => [c.configKey, c]))
+    const existingMap = new Map(existing.map((c) => [c.configKey, c]))
 
-  const merged = defaultConfigs.map((def) => {
-    const ex = existingMap.get(def.configKey)
-    return ex || def
-  })
+    const merged = defaultConfigs.map((def) => {
+      const ex = existingMap.get(def.configKey)
+      return ex || def
+    })
 
-  // Also include any existing configs not in defaults
-  const mergedKeys = new Set(defaultConfigs.map((d) => d.configKey))
-  existing.forEach((ex) => {
-    if (!mergedKeys.has(ex.configKey)) {
-      merged.push(ex)
-    }
-  })
+    // Also include any existing configs not in defaults
+    const mergedKeys = new Set(defaultConfigs.map((d) => d.configKey))
+    existing.forEach((ex) => {
+      if (!mergedKeys.has(ex.configKey)) {
+        merged.push(ex)
+      }
+    })
 
-  return successResponse(merged)
+    return successResponse(merged)
+  } catch (error) {
+    console.error('Admin configs GET error:', error)
+    return errorResponse('加载配置失败', 500)
+  }
 }
 
 export async function POST(request: NextRequest) {

@@ -41,9 +41,11 @@ export function MobileNav() {
   const [config, setConfig] = useState<SiteConfig>({ site_name: '速凌电竞', site_logo: '' })
 
   useEffect(() => {
-    fetchAuthMe().then((res) => {
-      if (res.success) setUser(res.data)
-    })
+    fetchAuthMe()
+      .then((res) => {
+        if (res.success) setUser(res.data)
+      })
+      .catch(() => {})
 
     fetch('/api/configs')
       .then((r) => r.json())
@@ -51,10 +53,11 @@ export function MobileNav() {
         if (res.success) {
           setConfig({
             site_name: res.data.site_name || '速凌电竞',
-            site_logo: res.data.site_logo || '',
+            site_logo: (res.data.site_logo || '').trim(),
           })
         }
       })
+      .catch(() => {})
   }, [pathname])
 
   if (pathname?.startsWith('/admin') || pathname?.startsWith('/backstage') || pathname === '/login' || pathname === '/seller/login') {

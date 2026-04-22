@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react'
 import Link from 'next/link'
-import { ChevronLeft, CheckCircle2, XCircle, Clock, Phone, User, MapPin, Calendar } from 'lucide-react'
+import { ChevronLeft, CheckCircle2, XCircle, Clock, Phone, User, MapPin, Calendar, LogOut } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -33,14 +33,20 @@ export default function AdminApplicationsPage() {
   const [filter, setFilter] = useState('all')
   const [reviewNote, setReviewNote] = useState('')
   const [selectedId, setSelectedId] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
 
   const fetchApplications = useCallback(() => {
+    setLoading(true)
     const url = filter === 'all' ? '/api/applications' : `/api/applications?status=${filter}`
     fetch(url)
       .then((r) => r.json())
       .then((res) => {
         if (res.success) setApplications(res.data)
       })
+      .catch(() => {
+        toast.error('加载失败')
+      })
+      .finally(() => setLoading(false))
   }, [filter])
 
   useEffect(() => {
@@ -78,6 +84,14 @@ export default function AdminApplicationsPage() {
             <ChevronLeft className="w-5 h-5 text-[rgba(180,200,255,0.7)] hover:text-[#00f5ff] transition-colors" />
           </Link>
           <h1 className="font-bold text-lg text-white" style={{ fontFamily: 'var(--font-orbitron)' }}>打手申请审核</h1>
+          <div className="flex-1" />
+          <button
+            onClick={() => fetch('/api/auth/logout', { method: 'POST' }).then(() => window.location.href = '/backstage/admin/login')}
+            className="text-sm text-[rgba(180,200,255,0.55)] hover:text-[#ff2244] transition-colors flex items-center gap-1"
+          >
+            <LogOut className="w-4 h-4" />
+            退出登录
+          </button>
         </div>
       </header>
 
@@ -97,6 +111,8 @@ export default function AdminApplicationsPage() {
           </TabsList>
         </Tabs>
 
+        {loading && <div className="text-center py-20 text-[rgba(180,200,255,0.45)]">加载中...</div>}
+        {!loading && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {applications.map((app) => (
             <Card key={app.id} className="p-4 glass-card border-0 hover:border-[rgba(0,245,255,0.2)] transition-all">
@@ -230,8 +246,9 @@ export default function AdminApplicationsPage() {
             </Card>
           ))}
         </div>
+        )}
 
-        {applications.length === 0 && (
+        {!loading && applications.length === 0 && (
           <div className="text-center py-20 text-[rgba(180,200,255,0.45)]">
             暂无申请记录
           </div>

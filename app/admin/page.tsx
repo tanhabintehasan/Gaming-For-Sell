@@ -15,6 +15,7 @@ import {
   ChevronRight,
   ClipboardList,
   Wallet,
+  LogOut,
 } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { toast } from 'sonner'
@@ -41,8 +42,10 @@ const menuItems = [
 export default function AdminDashboard() {
   const router = useRouter()
   const [stats, setStats] = useState<Stats | null>(null)
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
+    setLoading(true)
     fetch('/api/admin/stats')
       .then((r) => r.json())
       .then((res) => {
@@ -51,7 +54,18 @@ export default function AdminDashboard() {
       .catch(() => {
         toast.error('加载数据失败')
       })
+      .finally(() => {
+        setLoading(false)
+      })
   }, [router])
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-[rgba(180,200,255,0.5)]">加载中...</div>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen relative">
@@ -66,6 +80,13 @@ export default function AdminDashboard() {
             <Link href="/" className="text-sm text-[rgba(180,200,255,0.55)] hover:text-[#00f5ff] transition-colors">
               返回前台
             </Link>
+            <button
+              onClick={() => fetch('/api/auth/logout', { method: 'POST' }).then(() => window.location.href = '/backstage/admin/login')}
+              className="text-sm text-[rgba(180,200,255,0.55)] hover:text-[#ff2244] transition-colors flex items-center gap-1"
+            >
+              <LogOut className="w-4 h-4" />
+              退出登录
+            </button>
           </div>
         </div>
       </header>

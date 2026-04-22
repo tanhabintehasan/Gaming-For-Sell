@@ -2,11 +2,12 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { ChevronLeft, Clock, CheckCircle2, User } from 'lucide-react'
+import { ChevronLeft, Clock, CheckCircle2, User, LogOut } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { toast } from 'sonner'
 
 interface Ticket {
   id: string
@@ -24,8 +25,10 @@ interface Ticket {
 export default function AdminSupportPage() {
   const [tickets, setTickets] = useState<Ticket[]>([])
   const [filter, setFilter] = useState('all')
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
+    setLoading(true)
     const url = filter === 'unassigned' ? '/api/support/tickets?unassigned=true' : '/api/support/tickets'
     fetch(url)
       .then((r) => r.json())
@@ -39,6 +42,10 @@ export default function AdminSupportPage() {
           setTickets(data)
         }
       })
+      .catch(() => {
+        toast.error('加载失败')
+      })
+      .finally(() => setLoading(false))
   }, [filter])
 
   return (
@@ -49,6 +56,14 @@ export default function AdminSupportPage() {
             <ChevronLeft className="w-5 h-5 text-[rgba(180,200,255,0.7)] hover:text-[#00f5ff] transition-colors" />
           </Link>
           <h1 className="font-bold text-lg text-white" style={{ fontFamily: 'var(--font-orbitron)' }}>客服工单</h1>
+          <div className="flex-1" />
+          <button
+            onClick={() => fetch('/api/auth/logout', { method: 'POST' }).then(() => window.location.href = '/backstage/admin/login')}
+            className="text-sm text-[rgba(180,200,255,0.55)] hover:text-[#ff2244] transition-colors flex items-center gap-1"
+          >
+            <LogOut className="w-4 h-4" />
+            退出登录
+          </button>
         </div>
       </header>
 
@@ -62,6 +77,8 @@ export default function AdminSupportPage() {
           </TabsList>
         </Tabs>
 
+        {loading && <div className="text-center py-20 text-[rgba(180,200,255,0.45)]">加载中...</div>}
+        {!loading && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {tickets.map((ticket) => {
             const isGuest = !ticket.user
@@ -117,6 +134,7 @@ export default function AdminSupportPage() {
             )
           })}
         </div>
+        )}
       </main>
     </div>
   )

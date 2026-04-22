@@ -53,6 +53,7 @@ export function DesktopNav() {
       .then((res) => {
         if (res.success) setUser(res.data)
       })
+      .catch(() => {})
 
     fetch('/api/configs')
       .then((r) => r.json())
@@ -60,10 +61,11 @@ export function DesktopNav() {
         if (res.success) {
           setConfig({
             site_name: res.data.site_name || '速凌电竞',
-            site_logo: res.data.site_logo || '',
+            site_logo: (res.data.site_logo || '').trim(),
           })
         }
       })
+      .catch(() => {})
   }, [pathname])
 
   const handleLogout = async () => {
@@ -74,17 +76,25 @@ export function DesktopNav() {
 
   const isSeller = user && (user.level === 'SELLER' || user.level === 'ADMIN')
 
+  function LogoImage({ src, alt }: { src: string; alt: string }) {
+    const [error, setError] = useState(false)
+    if (error || !src || (!src.startsWith('/') && !src.startsWith('http'))) return null
+    return (
+      <Image
+        src={src}
+        alt={alt}
+        width={36}
+        height={36}
+        className="rounded-lg object-contain"
+        onError={() => setError(true)}
+        unoptimized
+      />
+    )
+  }
+
   const Logo = () => (
     <Link href="/" className="flex items-center gap-2 shrink-0">
-      {config.site_logo ? (
-        <Image
-          src={config.site_logo}
-          alt={config.site_name}
-          width={36}
-          height={36}
-          className="rounded-lg object-contain"
-        />
-      ) : null}
+      {config.site_logo ? <LogoImage src={config.site_logo} alt={config.site_name} /> : null}
       <span
         className="text-xl font-black tracking-wider text-[#00f5ff] drop-shadow-[0_0_12px_rgba(0,245,255,0.35)] transition-all hover:drop-shadow-[0_0_20px_rgba(0,245,255,0.55)]"
         style={{ fontFamily: 'var(--font-orbitron)' }}

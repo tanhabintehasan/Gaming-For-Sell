@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { ChevronLeft, Save, Upload, X, ImageIcon } from 'lucide-react'
+import { ChevronLeft, Save, Upload, X, ImageIcon, LogOut } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -46,10 +46,13 @@ export default function AdminSettingsPage() {
           setValues(map)
         }
       })
+      .catch(() => {
+        toast.error('加载失败')
+      })
   }, [])
 
-  const handleSave = async (key: string) => {
-    const res = await fetch('/api/admin/configs', {
+  const handleSave = (key: string) => {
+    fetch('/api/admin/configs', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -59,12 +62,17 @@ export default function AdminSettingsPage() {
         description: configs.find((c) => c.configKey === key)?.description,
       }),
     })
-    const data = await res.json()
-    if (data.success) {
-      toast.success('保存成功')
-    } else {
-      toast.error(data.message)
-    }
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.success) {
+          toast.success('保存成功')
+        } else {
+          toast.error(data.message)
+        }
+      })
+      .catch(() => {
+        toast.error('保存失败')
+      })
   }
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, key: string) => {
@@ -109,6 +117,14 @@ export default function AdminSettingsPage() {
             <ChevronLeft className="w-5 h-5 text-[rgba(180,200,255,0.7)] hover:text-[#00f5ff] transition-colors" />
           </Link>
           <h1 className="font-bold text-lg text-white" style={{ fontFamily: 'var(--font-orbitron)' }}>系统配置</h1>
+          <div className="flex-1" />
+          <button
+            onClick={() => fetch('/api/auth/logout', { method: 'POST' }).then(() => window.location.href = '/backstage/admin/login')}
+            className="text-sm text-[rgba(180,200,255,0.55)] hover:text-[#ff2244] transition-colors flex items-center gap-1"
+          >
+            <LogOut className="w-4 h-4" />
+            退出登录
+          </button>
         </div>
       </header>
 

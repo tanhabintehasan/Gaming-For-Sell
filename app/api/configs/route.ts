@@ -8,18 +8,27 @@ const publicConfigKeys = [
 ]
 
 export async function GET() {
-  const configs = await prisma.adminConfig.findMany({
-    where: { configKey: { in: publicConfigKeys } },
-  })
+  try {
+    const configs = await prisma.adminConfig.findMany({
+      where: { configKey: { in: publicConfigKeys } },
+    })
 
-  const result: Record<string, string> = {}
-  for (const key of publicConfigKeys) {
-    const found = configs.find((c) => c.configKey === key)
-    result[key] = found?.configValue || ''
+    const result: Record<string, string> = {}
+    for (const key of publicConfigKeys) {
+      const found = configs.find((c) => c.configKey === key)
+      result[key] = found?.configValue || ''
+    }
+
+    if (!result.site_name) result.site_name = '速凌电竞'
+    if (!result.site_logo) result.site_logo = ''
+
+    return successResponse(result)
+  } catch (error) {
+    console.error('Config fetch error:', error)
+    return successResponse({
+      site_name: '速凌电竞',
+      site_logo: '',
+      customer_service_qr: '',
+    })
   }
-
-  if (!result.site_name) result.site_name = '速凌电竞'
-  if (!result.site_logo) result.site_logo = ''
-
-  return successResponse(result)
 }

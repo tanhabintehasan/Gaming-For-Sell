@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react'
 import Link from 'next/link'
-import { ChevronLeft, Search, Shield, User, Gamepad2, Plus } from 'lucide-react'
+import { ChevronLeft, Search, Shield, User, Gamepad2, Plus, LogOut } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
@@ -38,6 +38,7 @@ export default function AdminUsersPage() {
   const [loading, setLoading] = useState(false)
 
   const fetchUsers = useCallback(() => {
+    setLoading(true)
     fetch('/api/admin/users')
       .then((r) => r.json())
       .then((res) => {
@@ -53,6 +54,10 @@ export default function AdminUsersPage() {
           setUsers(data)
         }
       })
+      .catch(() => {
+        toast.error('加载失败')
+      })
+      .finally(() => setLoading(false))
   }, [filter, search])
 
   useEffect(() => {
@@ -62,21 +67,26 @@ export default function AdminUsersPage() {
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
-    const res = await fetch('/api/admin/users', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(form),
-    })
-    const data = await res.json()
-    if (data.success) {
-      toast.success('创建成功')
-      setDialogOpen(false)
-      setForm({ username: '', phone: '', password: '', level: 'USER' })
-      fetchUsers()
-    } else {
-      toast.error(data.message)
+    try {
+      const res = await fetch('/api/admin/users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      })
+      const data = await res.json()
+      if (data.success) {
+        toast.success('创建成功')
+        setDialogOpen(false)
+        setForm({ username: '', phone: '', password: '', level: 'USER' })
+        fetchUsers()
+      } else {
+        toast.error(data.message)
+      }
+    } catch {
+      toast.error('创建失败')
+    } finally {
+      setLoading(false)
     }
-    setLoading(false)
   }
 
   return (
@@ -87,6 +97,14 @@ export default function AdminUsersPage() {
             <ChevronLeft className="w-5 h-5 text-[rgba(180,200,255,0.7)] hover:text-[#00f5ff] transition-colors" />
           </Link>
           <h1 className="font-bold text-lg text-white" style={{ fontFamily: 'var(--font-orbitron)' }}>用户管理</h1>
+          <div className="flex-1" />
+          <button
+            onClick={() => fetch('/api/auth/logout', { method: 'POST' }).then(() => window.location.href = '/backstage/admin/login')}
+            className="text-sm text-[rgba(180,200,255,0.55)] hover:text-[#ff2244] transition-colors flex items-center gap-1"
+          >
+            <LogOut className="w-4 h-4" />
+            退出登录
+          </button>
         </div>
       </header>
 

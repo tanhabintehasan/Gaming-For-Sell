@@ -12,19 +12,24 @@ async function checkAdmin() {
 }
 
 export async function GET() {
-  const denied = await checkAdmin()
-  if (denied) return denied
+  try {
+    const denied = await checkAdmin()
+    if (denied) return denied
 
-  const games = await prisma.game.findMany({
-    orderBy: { sortOrder: 'desc' },
-    include: {
-      _count: {
-        select: { sellerServices: true, orders: true, categories: true },
+    const games = await prisma.game.findMany({
+      orderBy: { sortOrder: 'desc' },
+      include: {
+        _count: {
+          select: { sellerServices: true, orders: true, categories: true },
+        },
       },
-    },
-  })
+    })
 
-  return successResponse(games)
+    return successResponse(games)
+  } catch (error) {
+    console.error('Admin games GET error:', error)
+    return errorResponse('加载游戏列表失败', 500)
+  }
 }
 
 export async function POST(request: NextRequest) {

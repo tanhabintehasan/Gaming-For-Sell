@@ -4,20 +4,25 @@ import { getAuthUser } from '@/lib/auth'
 import { successResponse, errorResponse } from '@/lib/api'
 
 export async function GET() {
-  const authUser = await getAuthUser()
-  if (!authUser || authUser.level !== 'ADMIN') {
-    return errorResponse('无权限', 403)
+  try {
+    const authUser = await getAuthUser()
+    if (!authUser || authUser.level !== 'ADMIN') {
+      return errorResponse('无权限', 403)
+    }
+
+    const products = await prisma.product.findMany({
+      orderBy: { createdAt: 'desc' },
+      include: {
+        game: { select: { id: true, nameCn: true } },
+        category: { select: { id: true, name: true } },
+      },
+    })
+
+    return successResponse(products)
+  } catch (error) {
+    console.error('Admin products GET error:', error)
+    return errorResponse('加载商品列表失败', 500)
   }
-
-  const products = await prisma.product.findMany({
-    orderBy: { createdAt: 'desc' },
-    include: {
-      game: { select: { id: true, nameCn: true } },
-      category: { select: { id: true, name: true } },
-    },
-  })
-
-  return successResponse(products)
 }
 
 export async function POST(request: NextRequest) {

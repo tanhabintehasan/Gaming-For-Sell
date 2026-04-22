@@ -4,19 +4,24 @@ import { getAuthUser } from '@/lib/auth'
 import { successResponse, errorResponse } from '@/lib/api'
 
 export async function GET() {
-  const authUser = await getAuthUser()
-  if (!authUser || authUser.level !== 'ADMIN') {
-    return errorResponse('无权限', 403)
+  try {
+    const authUser = await getAuthUser()
+    if (!authUser || authUser.level !== 'ADMIN') {
+      return errorResponse('无权限', 403)
+    }
+
+    const withdrawals = await prisma.withdrawal.findMany({
+      orderBy: { requestedAt: 'desc' },
+      include: {
+        seller: { select: { id: true, username: true, phone: true, sellerProfile: { select: { balance: true } } } },
+      },
+    })
+
+    return successResponse(withdrawals)
+  } catch (error) {
+    console.error('Admin withdrawals GET error:', error)
+    return errorResponse('加载提现列表失败', 500)
   }
-
-  const withdrawals = await prisma.withdrawal.findMany({
-    orderBy: { requestedAt: 'desc' },
-    include: {
-      seller: { select: { id: true, username: true, phone: true, sellerProfile: { select: { balance: true } } } },
-    },
-  })
-
-  return successResponse(withdrawals)
 }
 
 export async function PATCH(request: NextRequest) {

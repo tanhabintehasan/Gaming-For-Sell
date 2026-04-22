@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react'
 import Link from 'next/link'
-import { ChevronLeft, Plus, Edit2, Layers, ImageIcon, Upload, X, Gamepad2 } from 'lucide-react'
+import { ChevronLeft, Plus, Edit2, Layers, ImageIcon, Upload, X, Gamepad2, LogOut } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -162,6 +162,11 @@ export default function AdminGamesPage() {
       .then((r) => r.json())
       .then((res) => {
         if (res.success) setGames(res.data)
+      })
+      .catch(() => {
+        toast.error('加载失败')
+      })
+      .finally(() => {
         setLoading(false)
       })
   }, [])
@@ -175,6 +180,9 @@ export default function AdminGamesPage() {
       .then((r) => r.json())
       .then((res) => {
         if (res.success) setCategories(res.data)
+      })
+      .catch(() => {
+        toast.error('加载分类失败')
       })
   }, [])
 
@@ -597,14 +605,23 @@ export default function AdminGamesPage() {
             </Link>
             <h1 className="font-bold text-lg text-white" style={{ fontFamily: 'var(--font-orbitron)' }}>游戏管理</h1>
           </div>
-          <Button
-            size="sm"
-            className="bg-gradient-to-r from-[#00f5ff] to-[#00c2cc] text-[#050810] font-bold hover:brightness-110 border-0 rounded-full px-4"
-            onClick={openAdd}
-          >
-            <Plus className="w-4 h-4 mr-1" />
-            添加游戏
-          </Button>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => fetch('/api/auth/logout', { method: 'POST' }).then(() => window.location.href = '/backstage/admin/login')}
+              className="text-sm text-[rgba(180,200,255,0.55)] hover:text-[#ff2244] transition-colors flex items-center gap-1"
+            >
+              <LogOut className="w-4 h-4" />
+              退出登录
+            </button>
+            <Button
+              size="sm"
+              className="bg-gradient-to-r from-[#00f5ff] to-[#00c2cc] text-[#050810] font-bold hover:brightness-110 border-0 rounded-full px-4"
+              onClick={openAdd}
+            >
+              <Plus className="w-4 h-4 mr-1" />
+              添加游戏
+            </Button>
+          </div>
         </div>
       </header>
 

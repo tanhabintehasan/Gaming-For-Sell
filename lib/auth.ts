@@ -3,7 +3,10 @@ import bcrypt from 'bcryptjs'
 import { cookies } from 'next/headers'
 import { NextRequest } from 'next/server'
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production'
+const JWT_SECRET: string = process.env.JWT_SECRET || ''
+if (!JWT_SECRET) {
+  throw new Error('JWT_SECRET environment variable is required')
+}
 
 export interface JwtPayload {
   userId: string

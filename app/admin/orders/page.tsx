@@ -2,11 +2,12 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { ChevronLeft, Search } from 'lucide-react'
+import { ChevronLeft, Search, LogOut } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { toast } from 'sonner'
 
 interface Order {
   id: string
@@ -23,8 +24,10 @@ export default function AdminOrdersPage() {
   const [orders, setOrders] = useState<Order[]>([])
   const [filter, setFilter] = useState('all')
   const [search, setSearch] = useState('')
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
+    setLoading(true)
     fetch('/api/admin/orders')
       .then((r) => r.json())
       .then((res) => {
@@ -42,6 +45,12 @@ export default function AdminOrdersPage() {
           }
           setOrders(data)
         }
+      })
+      .catch(() => {
+        toast.error('加载失败')
+      })
+      .finally(() => {
+        setLoading(false)
       })
   }, [filter, search])
 
@@ -65,14 +74,31 @@ export default function AdminOrdersPage() {
     DISPUTE: 'bg-[rgba(244,34,68,0.1)] text-[#ff2244] border-[rgba(244,34,68,0.2)]',
   }
 
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-[rgba(180,200,255,0.5)]">加载中...</div>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen relative">
       <header className="border-b border-[rgba(0,245,255,0.1)] bg-[rgba(5,8,16,0.8)] backdrop-blur-xl sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 h-14 flex items-center gap-3">
-          <Link href="/admin">
-            <ChevronLeft className="w-5 h-5 text-[rgba(180,200,255,0.7)] hover:text-[#00f5ff] transition-colors" />
-          </Link>
-          <h1 className="font-bold text-lg text-white" style={{ fontFamily: 'var(--font-orbitron)' }}>订单管理</h1>
+        <div className="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Link href="/admin">
+              <ChevronLeft className="w-5 h-5 text-[rgba(180,200,255,0.7)] hover:text-[#00f5ff] transition-colors" />
+            </Link>
+            <h1 className="font-bold text-lg text-white" style={{ fontFamily: 'var(--font-orbitron)' }}>订单管理</h1>
+          </div>
+          <button
+            onClick={() => fetch('/api/auth/logout', { method: 'POST' }).then(() => window.location.href = '/backstage/admin/login')}
+            className="text-sm text-[rgba(180,200,255,0.55)] hover:text-[#ff2244] transition-colors flex items-center gap-1"
+          >
+            <LogOut className="w-4 h-4" />
+            退出登录
+          </button>
         </div>
       </header>
 
