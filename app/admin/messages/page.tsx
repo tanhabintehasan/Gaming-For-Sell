@@ -3,13 +3,14 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { ChevronLeft, MessageSquare } from 'lucide-react'
+import { ChevronLeft, MessageSquare, Ticket, Clock, CheckCircle2 } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { fetchAuthMe } from '@/lib/auth-client'
 
 interface Conversation {
+  type: 'message' | 'ticket'
   otherId: string
   other: {
     id: string
@@ -23,6 +24,11 @@ interface Conversation {
     senderId: string
   }
   unreadCount: number
+  ticketId: string | null
+  subject: string | null
+  status: string | null
+  isGuest: boolean
+  guestName: string | null
 }
 
 export default function AdminMessagesPage() {
@@ -77,40 +83,79 @@ export default function AdminMessagesPage() {
           </Card>
         ) : (
           <div className="space-y-3">
-            {conversations.map((conv) => (
-              <Link key={conv.otherId} href={`/chat/${conv.otherId}`}>
-                <Card className="p-4 flex items-center gap-4 hover:bg-[rgba(0,245,255,0.03)] transition-colors border-0 glass-card">
-                  <Avatar className="w-12 h-12 border border-[rgba(0,245,255,0.15)]">
-                    <AvatarImage src={conv.other.avatar} />
-                    <AvatarFallback className="bg-[rgba(0,245,255,0.1)] text-[#00f5ff]">{conv.other.username[0]}</AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <span className="font-medium text-white truncate">{conv.other.username}</span>
-                        <Badge className="text-[10px] border-0 bg-[rgba(0,245,255,0.1)] text-[#00f5ff]">
-                          {conv.other.level === 'SELLER' ? '打手' : '用户'}
-                        </Badge>
-                      </div>
-                      <span className="text-xs text-[rgba(180,200,255,0.45)]">
-                        {new Date(conv.lastMessage.createdAt).toLocaleDateString()}
-                      </span>
-                    </div>
-                    <div className="flex items-center justify-between mt-1">
-                      <p className="text-sm text-[rgba(180,200,255,0.6)] truncate">
-                        {conv.lastMessage.senderId === conv.otherId ? '' : '我: '}
-                        {conv.lastMessage.content}
-                      </p>
-                      {conv.unreadCount > 0 && (
-                        <Badge className="ml-2 bg-[#ff2244] text-white text-[10px] border-0 px-1.5 min-w-[1.25rem]">
-                          {conv.unreadCount}
-                        </Badge>
+            {conversations.map((conv) => {
+              const href = conv.type === 'ticket' ? `/support/${conv.ticketId}` : `/chat/${conv.otherId}`
+              const isMe = conv.lastMessage.senderId !== 'guest' && conv.lastMessage.senderId !== conv.otherId
+              return (
+                <Link key={`${conv.type}-${conv.otherId}`} href={href}>
+                  <Card className="p-4 flex items-center gap-4 hover:bg-[rgba(0,245,255,0.03)] transition-colors border-0 glass-card">
+                    <div className="relative">
+                      <Avatar className="w-12 h-12 border border-[rgba(0,245,255,0.15)]">
+                        <AvatarImage src={conv.other.avatar} />
+                        <AvatarFallback className={conv.type === 'ticket' ? 'bg-[rgba(255,170,0,0.15)] text-[#ffaa00]' : 'bg-[rgba(0,245,255,0.1)] text-[#00f5ff]'}>
+                          {conv.type === 'ticket' ? <Ticket className="w-5 h-5" /> : conv.other.username[0]}
+                        </AvatarFallback>
+                      </Avatar>
+                      {conv.type === 'ticket' && conv.status === 'OPEN' && (
+                        <span className="absolute -top-0.5 -right-0.5 w-3 h-3 bg-[#ffaa00] rounded-full border-2 border-[#050810]" />
                       )}
                     </div>
-                  </div>
-                </Card>
-              </Link>
-            ))}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <span className="font-medium text-white truncate">
+                            {conv.type === 'ticket' ? (conv.subject || '客服工单') : conv.other.username}
+                          </span>
+                          {conv.type === 'ticket' && (
+                            <>
+                              {conv.isGuest ? (
+                                <Badge className="text-[10px] border-0 bg-[rgba(255,170,0,0.15)] text-[#ffaa00]">
+                                  匿名用户
+                                </Badge>
+                              ) : (
+                                <Badge className="text-[10px] border-0 bg-[rgba(0,245,255,0.1)] text-[#00f5ff]">
+                                  用户
+                                </Badge>
+                              )}
+                              {conv.status === 'OPEN' ? (
+                                <Badge className="text-[10px] border-0 bg-[rgba(255,170,0,0.1)] text-[#ffaa00] flex items-center gap-0.5">
+                                  <Clock className="w-3 h-3" />
+                                  处理中
+                                </Badge>
+                              ) : (
+                                <Badge className="text-[10px] border-0 bg-[rgba(74,222,128,0.1)] text-[#4ade80] flex items-center gap-0.5">
+                                  <CheckCircle2 className="w-3 h-3" />
+                                  已关闭
+                                </Badge>
+                              )}
+                            </>
+                          )}
+                          {conv.type === 'message' && (
+                            <Badge className="text-[10px] border-0 bg-[rgba(0,245,255,0.1)] text-[#00f5ff]">
+                              {conv.other.level === 'SELLER' ? '打手' : '用户'}
+                            </Badge>
+                          )}
+                        </div>
+                        <span className="text-xs text-[rgba(180,200,255,0.45)]">
+                          {new Date(conv.lastMessage.createdAt).toLocaleDateString()}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between mt-1">
+                        <p className="text-sm text-[rgba(180,200,255,0.6)] truncate">
+                          {isMe ? '我: ' : ''}
+                          {conv.lastMessage.content}
+                        </p>
+                        {conv.unreadCount > 0 && (
+                          <Badge className="ml-2 bg-[#ff2244] text-white text-[10px] border-0 px-1.5 min-w-[1.25rem]">
+                            {conv.unreadCount}
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                  </Card>
+                </Link>
+              )
+            })}
           </div>
         )}
       </main>

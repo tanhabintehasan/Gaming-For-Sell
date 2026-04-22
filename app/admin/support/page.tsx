@@ -80,8 +80,8 @@ export default function AdminSupportPage() {
                         <h3 className="font-medium line-clamp-1 text-white">{ticket.subject}</h3>
                         <div className="flex items-center gap-2 mt-1">
                           <span className="text-xs text-[rgba(180,200,255,0.45)]">{username}</span>
-                          <Badge variant="outline" className="text-[10px] h-4 px-1 border-[rgba(0,245,255,0.15)] bg-[rgba(0,245,255,0.05)] text-[#00f5ff] rounded">
-                            {isGuest ? '游客' : ticket.user?.level === 'SELLER' ? '打手' : '用户'}
+                          <Badge variant="outline" className={`text-[10px] h-4 px-1 rounded ${isGuest ? 'border-[rgba(255,170,0,0.2)] bg-[rgba(255,170,0,0.08)] text-[#ffaa00]' : 'border-[rgba(0,245,255,0.15)] bg-[rgba(0,245,255,0.05)] text-[#00f5ff]'}`}>
+                            {isGuest ? '匿名用户' : ticket.user?.level === 'SELLER' ? '打手' : '用户'}
                           </Badge>
                         </div>
                       </div>

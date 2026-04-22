@@ -37,6 +37,31 @@ async function main() {
     },
   })
 
+  // Regular users
+  const userData = [
+    { username: '小明', phone: '13900139001', gender: 'MALE', age: 20, location: '北京市', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=user1' },
+    { username: '小红', phone: '13900139002', gender: 'FEMALE', age: 22, location: '上海市', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=user2' },
+    { username: '阿强', phone: '13900139003', gender: 'MALE', age: 24, location: '广州市', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=user3' },
+    { username: '丽丽', phone: '13900139004', gender: 'FEMALE', age: 21, location: '深圳市', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=user4' },
+    { username: '大壮', phone: '13900139005', gender: 'MALE', age: 26, location: '成都市', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=user5' },
+  ]
+
+  for (const u of userData) {
+    await prisma.user.create({
+      data: {
+        phone: u.phone,
+        username: u.username,
+        passwordHash: hashedPassword,
+        level: 'USER',
+        gender: u.gender as any,
+        age: u.age,
+        location: u.location,
+        avatar: u.avatar,
+        isVerified: true,
+      },
+    })
+  }
+
   // Games - sequential instead of Promise.all
   const games = []
 

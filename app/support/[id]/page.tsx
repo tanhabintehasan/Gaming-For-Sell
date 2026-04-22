@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef, useCallback } from 'react'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
-import { ChevronLeft, Send, Shield } from 'lucide-react'
+import { ChevronLeft, Send, Shield, UserX } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -146,9 +146,17 @@ export default function TicketDetailPage() {
           <Link href="/support">
             <ChevronLeft className="w-5 h-5 text-[rgba(180,200,255,0.7)] hover:text-[#00f5ff] transition-colors" />
           </Link>
-          <h1 className="font-bold text-lg text-white truncate" style={{ fontFamily: 'var(--font-orbitron)' }}>
-            {ticket.subject}
-          </h1>
+          <div className="flex items-center gap-2 min-w-0">
+            <h1 className="font-bold text-lg text-white truncate" style={{ fontFamily: 'var(--font-orbitron)' }}>
+              {ticket.subject}
+            </h1>
+            {!ticket.user && (
+              <span className="shrink-0 inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full bg-[rgba(255,170,0,0.15)] text-[#ffaa00] border border-[rgba(255,170,0,0.2)]">
+                <UserX className="w-3 h-3" />
+                匿名用户
+              </span>
+            )}
+          </div>
           {ticket.status === 'OPEN' ? (
             <Button size="sm" variant="outline" onClick={closeTicket} className="ml-auto border-[rgba(244,34,68,0.3)] text-[#ff2244] hover:bg-[rgba(244,34,68,0.1)] rounded-xl">
               关闭工单
