@@ -3,7 +3,8 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { User, Shield, LogOut, Headphones, Mail, Gamepad2, UserPlus, Package, TrendingUp, Wallet, Star } from 'lucide-react'
+import Image from 'next/image'
+import { User, Shield, LogOut, Headphones, Mail, Gamepad2, UserPlus, Package, TrendingUp } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -20,6 +21,11 @@ interface AuthUser {
   username: string
   level: string
   avatar: string
+}
+
+interface SiteConfig {
+  site_name: string
+  site_logo: string
 }
 
 const publicNavLinks = [
@@ -40,11 +46,23 @@ const sellerNavLinks = [
 export function DesktopNav() {
   const pathname = usePathname()
   const [user, setUser] = useState<AuthUser | null>(null)
+  const [config, setConfig] = useState<SiteConfig>({ site_name: '速凌电竞', site_logo: '' })
 
   useEffect(() => {
     fetchAuthMe()
       .then((res) => {
         if (res.success) setUser(res.data)
+      })
+
+    fetch('/api/configs')
+      .then((r) => r.json())
+      .then((res) => {
+        if (res.success) {
+          setConfig({
+            site_name: res.data.site_name || '速凌电竞',
+            site_logo: res.data.site_logo || '',
+          })
+        }
       })
   }, [pathname])
 
@@ -56,12 +74,30 @@ export function DesktopNav() {
 
   const isSeller = user && (user.level === 'SELLER' || user.level === 'ADMIN')
 
+  const Logo = () => (
+    <Link href="/" className="flex items-center gap-2 shrink-0">
+      {config.site_logo ? (
+        <Image
+          src={config.site_logo}
+          alt={config.site_name}
+          width={36}
+          height={36}
+          className="rounded-lg object-contain"
+        />
+      ) : null}
+      <span
+        className="text-xl font-black tracking-wider text-[#00f5ff] drop-shadow-[0_0_12px_rgba(0,245,255,0.35)] transition-all hover:drop-shadow-[0_0_20px_rgba(0,245,255,0.55)]"
+        style={{ fontFamily: 'var(--font-orbitron)' }}
+      >
+        {config.site_name}
+      </span>
+    </Link>
+  )
+
   if (pathname?.startsWith('/admin') || pathname?.startsWith('/backstage') || pathname === '/login' || pathname === '/seller/login') {
     return (
       <header className="hidden lg:flex items-center justify-between h-16 px-8 border-b border-[rgba(0,245,255,0.12)] bg-[rgba(5,8,16,0.85)] backdrop-blur-xl sticky top-0 z-50">
-        <Link href="/" className="text-xl font-black tracking-wider text-[#00f5ff] drop-shadow-[0_0_12px_rgba(0,245,255,0.35)]" style={{ fontFamily: 'var(--font-orbitron)' }}>
-          速凌电竞
-        </Link>
+        <Logo />
       </header>
     )
   }
@@ -69,9 +105,7 @@ export function DesktopNav() {
   return (
     <header className="hidden lg:flex items-center justify-between h-16 px-8 border-b border-[rgba(0,245,255,0.12)] bg-[rgba(5,8,16,0.75)] backdrop-blur-xl sticky top-0 z-50">
       <div className="flex items-center gap-10">
-        <Link href="/" className="text-xl font-black tracking-wider text-[#00f5ff] drop-shadow-[0_0_12px_rgba(0,245,255,0.35)] transition-all hover:drop-shadow-[0_0_20px_rgba(0,245,255,0.55)]" style={{ fontFamily: 'var(--font-orbitron)' }}>
-          速凌电竞
-        </Link>
+        <Logo />
         <nav className="flex items-center gap-2">
           {publicNavLinks.map((link) => (
             <Link
@@ -87,7 +121,6 @@ export function DesktopNav() {
               {link.label}
             </Link>
           ))}
-          {/* Seller quick links in top nav */}
           {isSeller && sellerNavLinks.slice(1).map((link) => (
             <Link
               key={link.href}
@@ -134,7 +167,6 @@ export function DesktopNav() {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="glass-card border-[rgba(0,245,255,0.2)]">
               {isSeller ? (
-                /* ===== SELLER DROPDOWN ===== */
                 <>
                   <DropdownMenuItem>
                     <Link href="/seller/dashboard" className="gap-2 flex items-center w-full text-[rgba(232,238,255,0.9)] hover:text-[#00f5ff]">
@@ -186,7 +218,6 @@ export function DesktopNav() {
                   </DropdownMenuItem>
                 </>
               ) : (
-                /* ===== CUSTOMER DROPDOWN ===== */
                 <>
                   <DropdownMenuItem>
                     <Link href="/profile" className="gap-2 flex items-center w-full text-[rgba(232,238,255,0.9)] hover:text-[#00f5ff]">

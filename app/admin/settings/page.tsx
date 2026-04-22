@@ -2,13 +2,14 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { ChevronLeft, Save } from 'lucide-react'
+import { ChevronLeft, Save, Upload, X, ImageIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Checkbox } from '@/components/ui/checkbox'
 import { toast } from 'sonner'
+import Image from 'next/image'
 
 interface Config {
   id?: string
@@ -18,9 +19,19 @@ interface Config {
   description: string
 }
 
+async function uploadImage(file: File): Promise<string> {
+  const formData = new FormData()
+  formData.append('file', file)
+  const res = await fetch('/api/admin/upload', { method: 'POST', body: formData })
+  const data = await res.json()
+  if (!data.success) throw new Error(data.message || '上传失败')
+  return data.data.url
+}
+
 export default function AdminSettingsPage() {
   const [configs, setConfigs] = useState<Config[]>([])
   const [values, setValues] = useState<Record<string, string>>({})
+  const [uploading, setUploading] = useState<Record<string, boolean>>({})
 
   useEffect(() => {
     fetch('/api/admin/configs')
@@ -56,6 +67,23 @@ export default function AdminSettingsPage() {
     }
   }
 
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, key: string) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setUploading((prev) => ({ ...prev, [key]: true }))
+    try {
+      const url = await uploadImage(file)
+      setValues((prev) => ({ ...prev, [key]: url }))
+      toast.success('上传成功')
+      await handleSave(key)
+    } catch (err: any) {
+      toast.error(err.message || '上传失败')
+    } finally {
+      setUploading((prev) => ({ ...prev, [key]: false }))
+      e.target.value = ''
+    }
+  }
+
   const grouped = configs.reduce((acc, c) => {
     if (!acc[c.category]) acc[c.category] = []
     acc[c.category].push(c)
@@ -69,11 +97,9 @@ export default function AdminSettingsPage() {
     finance: '财务配置',
   }
 
-  const isBooleanKey = (key: string) =>
-    key.endsWith('_enabled')
-
-  const isLongTextKey = (key: string) =>
-    key.includes('private_key') || key.includes('public_key') || key.includes('api_key')
+  const isBooleanKey = (key: string) => key.endsWith('_enabled')
+  const isLongTextKey = (key: string) => key.includes('private_key') || key.includes('public_key') || key.includes('api_key')
+  const isImageKey = (key: string) => key === 'site_logo' || key === 'customer_service_qr'
 
   return (
     <div className="min-h-screen relative">
@@ -113,6 +139,40 @@ export default function AdminSettingsPage() {
                         <Label htmlFor={config.configKey} className="text-[rgba(180,200,255,0.75)] cursor-pointer">
                           启用
                         </Label>
+                      </div>
+                    ) : isImageKey(config.configKey) ? (
+                      <div className="flex-1 flex items-center gap-3">
+                        {values[config.configKey] && (
+                          <div className="relative shrink-0">
+                            <Image
+                              src={values[config.configKey]}
+                              alt={config.description}
+                              width={48}
+                              height={48}
+                              className="rounded-lg object-cover border border-[rgba(0,245,255,0.15)]"
+                            />
+                            <button
+                              onClick={() => setValues((prev) => ({ ...prev, [config.configKey]: '' }))}
+                              className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[#ff2244] text-white flex items-center justify-center"
+                            >
+                              <X className="w-3 h-3" />
+                            </button>
+                          </div>
+                        )}
+                        <label className="cursor-pointer inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-[rgba(0,245,255,0.2)] bg-[rgba(0,245,255,0.05)] text-[#00f5ff] hover:bg-[rgba(0,245,255,0.1)] transition-colors text-sm">
+                          <Upload className="w-4 h-4" />
+                          {uploading[config.configKey] ? '上传中...' : values[config.configKey] ? '更换图片' : '上传图片'}
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={(e) => handleImageUpload(e, config.configKey)}
+                            disabled={uploading[config.configKey]}
+                          />
+                        </label>
+                        {values[config.configKey] && (
+                          <span className="text-xs text-[rgba(180,200,255,0.4)] truncate max-w-[200px]">{values[config.configKey]}</span>
+                        )}
                       </div>
                     ) : isLongTextKey(config.configKey) ? (
                       <textarea

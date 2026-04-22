@@ -110,7 +110,6 @@ export default function ChatPage() {
       })
       const data = await res.json()
       if (data.success) {
-        setMessages((prev) => [...prev, data.data])
         setInput('')
       } else {
         toast.error(data.message)

@@ -32,9 +32,8 @@ const menuItems = [
   { icon: Package, label: '商品管理', href: '/admin/products', desc: '管理商品和服务', color: 'from-[#ff2244] to-[#ff6b00]' },
   { icon: ShoppingCart, label: '订单管理', href: '/admin/orders', desc: '查看和处理订单', color: 'from-[#ff6b00] to-[#f59e0b]' },
   { icon: Users, label: '用户管理', href: '/admin/users', desc: '管理用户和打手', color: 'from-[#8b5cf6] to-[#a78bfa]' },
-  { icon: Ticket, label: '客服工单', href: '/admin/support', desc: '处理客户问题', color: 'from-[#28c840] to-[#4ade80]' },
+  { icon: MessageSquare, label: '消息与工单', href: '/admin/messages', desc: '私信与客服工单统一处理', color: 'from-[#06b6d4] to-[#22d3ee]' },
   { icon: ClipboardList, label: '打手申请', href: '/admin/applications', desc: '审核打手入驻申请', color: 'from-[#ec4899] to-[#f472b6]' },
-  { icon: MessageSquare, label: '消息中心', href: '/admin/messages', desc: '用户与客服私信', color: 'from-[#06b6d4] to-[#22d3ee]' },
   { icon: Wallet, label: '提现审核', href: '/admin/withdrawals', desc: '审核打手提现申请', color: 'from-[#f59e0b] to-[#fbbf24]' },
   { icon: Settings, label: '系统配置', href: '/admin/settings', desc: '支付、短信、Logo等', color: 'from-[#ffd700] to-[#ffaa00]' },
 ]

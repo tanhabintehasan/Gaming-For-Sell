@@ -3,7 +3,8 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { Home, Gamepad2, Users, User, Headphones, UserPlus, Package, TrendingUp, Wallet } from 'lucide-react'
+import Image from 'next/image'
+import { Home, Gamepad2, Users, User, Headphones, UserPlus, Package, TrendingUp } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { fetchAuthMe } from '@/lib/auth-client'
 
@@ -11,6 +12,11 @@ interface AuthUser {
   id: string
   username: string
   level: string
+}
+
+interface SiteConfig {
+  site_name: string
+  site_logo: string
 }
 
 const customerNavItems = [
@@ -32,11 +38,23 @@ const sellerNavItems = [
 export function MobileNav() {
   const pathname = usePathname()
   const [user, setUser] = useState<AuthUser | null>(null)
+  const [config, setConfig] = useState<SiteConfig>({ site_name: '速凌电竞', site_logo: '' })
 
   useEffect(() => {
     fetchAuthMe().then((res) => {
       if (res.success) setUser(res.data)
     })
+
+    fetch('/api/configs')
+      .then((r) => r.json())
+      .then((res) => {
+        if (res.success) {
+          setConfig({
+            site_name: res.data.site_name || '速凌电竞',
+            site_logo: res.data.site_logo || '',
+          })
+        }
+      })
   }, [pathname])
 
   if (pathname?.startsWith('/admin') || pathname?.startsWith('/backstage') || pathname === '/login' || pathname === '/seller/login') {
@@ -69,7 +87,6 @@ export function MobileNav() {
                 </Link>
               )
             })}
-            {/* Show register button only for non-logged-in customers */}
             {!user && !isSeller && (
               <Link
                 href="/register"

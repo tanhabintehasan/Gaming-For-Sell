@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 
-import { ChevronLeft, Plus, Edit2, Trash2, Package } from 'lucide-react'
+import { ChevronLeft, Plus, Edit2, Trash2, Package, Upload, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -62,6 +62,7 @@ export default function SellerProductsPage() {
   const [editing, setEditing] = useState<Product | null>(null)
   const [form, setForm] = useState(emptyForm)
   const [saving, setSaving] = useState(false)
+  const [imageUploading, setImageUploading] = useState(false)
 
   useEffect(() => {
     fetchAuthMe()
@@ -118,6 +119,36 @@ export default function SellerProductsPage() {
       isActive: product.isActive,
     })
     setDialogOpen(true)
+  }
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    if (!file.type.startsWith('image/')) {
+      toast.error('请上传图片文件')
+      return
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('图片大小不能超过5MB')
+      return
+    }
+    setImageUploading(true)
+    try {
+      const fd = new FormData()
+      fd.append('file', file)
+      const res = await fetch('/api/admin/upload', { method: 'POST', body: fd })
+      const data = await res.json()
+      if (data.url) {
+        setForm((f) => ({ ...f, imageUrl: data.url }))
+        toast.success('图片上传成功')
+      } else {
+        toast.error('上传失败')
+      }
+    } catch {
+      toast.error('上传失败')
+    } finally {
+      setImageUploading(false)
+    }
   }
 
   const handleSave = async () => {
@@ -347,8 +378,29 @@ export default function SellerProductsPage() {
               </div>
             </div>
             <div className="space-y-2">
-              <Label className="text-[rgba(180,200,255,0.75)]">图片地址</Label>
-              <Input value={form.imageUrl} onChange={(e) => setForm((f) => ({ ...f, imageUrl: e.target.value }))} placeholder="https://..." className="bg-[rgba(0,245,255,0.05)] border-[rgba(0,245,255,0.12)] text-[#e8eeff] rounded-xl h-11" />
+              <Label className="text-[rgba(180,200,255,0.75)]">商品图片</Label>
+              <div className="flex items-center gap-3">
+                {form.imageUrl ? (
+                  <div className="relative w-16 h-16 rounded-lg overflow-hidden border border-[rgba(0,245,255,0.15)]">
+                    <Image src={form.imageUrl} alt="preview" fill className="object-cover" />
+                    <button
+                      type="button"
+                      onClick={() => setForm((f) => ({ ...f, imageUrl: '' }))}
+                      className="absolute top-0 right-0 bg-black/60 text-white p-0.5 rounded-bl"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  </div>
+                ) : (
+                  <label className="flex items-center justify-center w-16 h-16 rounded-lg border border-dashed border-[rgba(0,245,255,0.25)] bg-[rgba(0,245,255,0.03)] cursor-pointer hover:bg-[rgba(0,245,255,0.07)] transition-colors">
+                    <Upload className="w-5 h-5 text-[rgba(0,245,255,0.6)]" />
+                    <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} disabled={imageUploading} />
+                  </label>
+                )}
+                <span className="text-xs text-[rgba(180,200,255,0.4)]">
+                  {imageUploading ? '上传中...' : form.imageUrl ? '已上传' : '点击上传图片'}
+                </span>
+              </div>
             </div>
             <div className="flex items-center gap-2 pt-2">
               <input
