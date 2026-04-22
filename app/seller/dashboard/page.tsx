@@ -169,7 +169,7 @@ export default function SellerDashboardPage() {
         {/* Header */}
         <div className="relative rounded-[2rem] overflow-hidden mb-6 lg:mb-8 shadow-[0_24px_70px_rgba(0,0,0,0.35)]">
           <div className="absolute inset-0 bg-gradient-to-br from-[#0a1226] via-[#070e1c] to-[#050810]" />
-          <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1511512578047-dfb367046420?w=800&h=300&fit=crop')] bg-cover bg-center opacity-15" />
+          <div className="absolute inset-0 bg-gradient-to-br from-[#0a1a2e] via-[#061220] to-[#040810] opacity-60" />
           <div className="absolute inset-0" style={{
             backgroundImage: 'linear-gradient(rgba(0,245,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0,245,255,0.03) 1px, transparent 1px)',
             backgroundSize: '26px 26px'

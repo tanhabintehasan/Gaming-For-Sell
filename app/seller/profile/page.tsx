@@ -246,7 +246,7 @@ export default function SellerProfilePage() {
   const currentVoiceUrl = recordedUrl || profile.voiceIntroUrl
 
   return (
-    <div className="relative min-h-screen lg:py-8 pb-20">
+    <div className="relative min-h-screen lg:py-8 pb-24">
       <div className="max-w-2xl mx-auto px-4">
         <div className="flex items-center gap-3 py-4 lg:py-0 lg:mb-6">
           <button onClick={() => router.back()} className="p-2 -ml-2 lg:hidden text-white hover:text-[#00f5ff] transition-colors">

@@ -10,7 +10,7 @@ import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { toast } from 'sonner'
-import Image from 'next/image'
+import { SafeImage } from '@/components/safe-image'
 import { fetchAuthMe } from '@/lib/auth-client'
 import {
   Dialog,
@@ -233,7 +233,7 @@ export default function SellerProductsPage() {
   }
 
   return (
-    <div className="relative min-h-screen lg:py-8 pb-20">
+    <div className="relative min-h-screen lg:py-8 pb-24">
       <div className="max-w-3xl mx-auto px-4">
         <div className="flex items-center justify-between py-4 lg:py-0 lg:mb-6">
           <div className="flex items-center gap-3">
@@ -256,7 +256,7 @@ export default function SellerProductsPage() {
               <div className="flex items-start gap-4">
                 <div className="w-20 h-20 rounded-xl bg-gray-900 relative overflow-hidden shrink-0 border border-[rgba(0,245,255,0.1)]">
                   {product.imageUrl ? (
-                    <Image src={product.imageUrl} alt={product.name} fill className="object-cover" />
+                    <SafeImage src={product.imageUrl} alt={product.name} fill className="object-cover" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-[rgba(180,200,255,0.3)]">
                       <Package className="w-8 h-8" />
@@ -382,7 +382,7 @@ export default function SellerProductsPage() {
               <div className="flex items-center gap-3">
                 {form.imageUrl ? (
                   <div className="relative w-16 h-16 rounded-lg overflow-hidden border border-[rgba(0,245,255,0.15)]">
-                    <Image src={form.imageUrl} alt="preview" fill className="object-cover" />
+                    <SafeImage src={form.imageUrl} alt="preview" fill className="object-cover" />
                     <button
                       type="button"
                       onClick={() => setForm((f) => ({ ...f, imageUrl: '' }))}

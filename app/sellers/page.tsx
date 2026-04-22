@@ -52,7 +52,7 @@ export default function SellersPage() {
   }, [gender, search])
 
   return (
-    <div className="relative min-h-screen lg:py-8">
+    <div className="relative min-h-screen lg:py-8 pb-24">
       <div className="max-w-7xl mx-auto px-4">
         {/* Header */}
         <div className="lg:hidden sticky top-0 z-30 py-4">

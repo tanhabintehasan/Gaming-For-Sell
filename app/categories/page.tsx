@@ -3,7 +3,7 @@
 import { useEffect, useState, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
-import Image from 'next/image'
+import { SafeImage } from '@/components/safe-image'
 import { ChevronRight } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { ScrollArea } from '@/components/ui/scroll-area'
@@ -42,6 +42,7 @@ function CategoriesContent() {
   const [selectedGame, setSelectedGame] = useState<string | null>(null)
   const [selectedCategory, setSelectedCategory] = useState<string | null>(initialCategory || null)
 
+  // Fetch games once on mount
   useEffect(() => {
     fetch('/api/games').then((r) => r.json()).then((res) => {
       if (res.success) {
@@ -51,8 +52,10 @@ function CategoriesContent() {
         }
       }
     })
-  }, [selectedGame])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
+  // Fetch categories when selectedGame changes
   useEffect(() => {
     if (selectedGame) {
       fetch(`/api/games/${selectedGame}/categories`).then((r) => r.json()).then((res) => {
@@ -64,8 +67,9 @@ function CategoriesContent() {
         }
       })
     }
-  }, [selectedGame, selectedCategory])
+  }, [selectedGame])
 
+  // Fetch products when filters change
   useEffect(() => {
     const url = selectedCategory
       ? `/api/products?categoryId=${selectedCategory}&limit=50`
@@ -78,7 +82,7 @@ function CategoriesContent() {
   }, [selectedCategory, selectedGame])
 
   return (
-    <div className="relative min-h-screen lg:py-8">
+    <div className="relative min-h-screen lg:py-8 pb-24">
       {/* ========== MOBILE TOP NAVIGATION ========== */}
       <div className="lg:hidden">
         {/* Game Tabs */}
@@ -204,7 +208,7 @@ function CategoriesContent() {
                 <Card className="flex gap-3 lg:gap-4 p-3 lg:p-4 glass-card hover:border-[rgba(0,245,255,0.35)] hover:shadow-[0_16px_40px_rgba(0,0,0,0.35),0_0_20px_rgba(0,245,255,0.08)] transition-all cursor-pointer border-0">
                   <div className="w-20 h-20 lg:w-28 lg:h-28 rounded-xl bg-gray-900 shrink-0 overflow-hidden relative border border-[rgba(0,245,255,0.1)]">
                     {product.imageUrl && (
-                      <Image
+                      <SafeImage
                         src={product.imageUrl}
                         alt={product.name}
                         fill

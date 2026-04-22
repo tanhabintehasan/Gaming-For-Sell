@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import Image from 'next/image'
+import { SafeImage } from '@/components/safe-image'
 import { Share2, Heart, ChevronLeft, Store, Play, Pause, Upload, Mic } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -188,13 +188,12 @@ export default function ProductDetailPage() {
           {/* Image */}
           <div className="relative aspect-square lg:aspect-[4/5] lg:rounded-2xl lg:overflow-hidden bg-gray-900 border border-[rgba(0,245,255,0.1)] lg:border-[rgba(0,245,255,0.15)]">
             {product.imageUrl && (
-              <Image
+              <SafeImage
                 src={product.imageUrl}
                 alt={product.name}
                 fill
                 className="object-cover"
                 priority
-                unoptimized
               />
             )}
             <div className="absolute inset-0 bg-gradient-to-t from-[#050810] via-transparent to-transparent opacity-60" />

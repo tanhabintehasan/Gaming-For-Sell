@@ -63,22 +63,21 @@ export default function RegisterPage() {
       toast.error('两次输入的密码不一致')
       return
     }
-    if (!code) {
-      toast.error('请输入验证码')
-      return
-    }
     setLoading(true)
     try {
-      const verifyRes = await fetch('/api/sms/verify', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone, code, purpose: 'REGISTER' }),
-      })
-      const verifyData = await verifyRes.json()
-      if (!verifyData.success) {
-        toast.error(verifyData.message || '验证码错误')
-        setLoading(false)
-        return
+      // Only verify SMS if code is provided
+      if (code) {
+        const verifyRes = await fetch('/api/sms/verify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ phone, code, purpose: 'REGISTER' }),
+        })
+        const verifyData = await verifyRes.json()
+        if (!verifyData.success) {
+          toast.error(verifyData.message || '验证码错误')
+          setLoading(false)
+          return
+        }
       }
 
       const res = await fetch('/api/auth/register', {

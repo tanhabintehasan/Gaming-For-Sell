@@ -3,7 +3,7 @@
 import { useEffect, useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
-import Image from 'next/image'
+import { SafeImage } from '@/components/safe-image'
 import { ChevronRight } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -104,7 +104,7 @@ function OrdersContent() {
               <div className="flex gap-3">
                 <div className="w-20 h-20 rounded-xl bg-gray-900 relative overflow-hidden shrink-0 border border-[rgba(0,245,255,0.08)]">
                   {order.product?.imageUrl && (
-                    <Image src={order.product.imageUrl} alt={order.product.name} fill className="object-cover" />
+                    <SafeImage src={order.product.imageUrl} alt={order.product.name} fill className="object-cover" />
                   )}
                 </div>
                 <div className="flex-1 min-w-0">

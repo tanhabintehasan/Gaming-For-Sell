@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
-import Image from 'next/image'
+import { SafeImage } from '@/components/safe-image'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 
@@ -40,23 +40,17 @@ export default function GameDetailPage() {
   const [products, setProducts] = useState<Product[]>([])
 
   useEffect(() => {
-    fetch('/api/games')
+    if (!slug) return
+    fetch(`/api/games/slug/${slug}`)
       .then((r) => r.json())
       .then((res) => {
         if (res.success) {
-          const g = res.data.find((x: Game) => x.slug === slug)
-          if (g) {
-            fetch(`/api/games/${g.id}`)
-              .then((r) => r.json())
-              .then((detailRes) => {
-                if (detailRes.success) setGame(detailRes.data)
-              })
-            fetch(`/api/products?gameId=${g.id}&limit=8`)
-              .then((r) => r.json())
-              .then((prodRes) => {
-                if (prodRes.success) setProducts(prodRes.data.products)
-              })
-          }
+          setGame(res.data)
+          fetch(`/api/products?gameId=${res.data.id}&limit=8`)
+            .then((r) => r.json())
+            .then((prodRes) => {
+              if (prodRes.success) setProducts(prodRes.data.products)
+            })
         }
       })
   }, [slug])
@@ -70,11 +64,11 @@ export default function GameDetailPage() {
   }
 
   return (
-    <div className="min-h-screen relative pb-20 lg:pb-8">
+    <div className="min-h-screen relative pb-24 lg:pb-8">
       {/* Banner */}
       <div className="relative h-48 lg:h-72 border-b border-[rgba(0,245,255,0.1)]">
         {game.bannerUrl && (
-          <Image src={game.bannerUrl} alt={game.nameCn} fill className="object-cover" />
+          <SafeImage src={game.bannerUrl} alt={game.nameCn} fill className="object-cover" />
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-[#050810] via-[#050810aa] to-transparent" />
         <div className="absolute inset-0 bg-gradient-to-r from-[#050810d9] via-[#05081080] to-transparent" />
@@ -102,7 +96,7 @@ export default function GameDetailPage() {
               >
                 <div className="w-14 h-14 lg:w-16 lg:h-16 rounded-xl bg-[rgba(0,245,255,0.06)] border border-[rgba(0,245,255,0.12)] flex items-center justify-center group-hover:border-[rgba(0,245,255,0.35)] group-hover:shadow-[0_0_16px_rgba(0,245,255,0.12)] transition-all">
                   {cat.iconUrl ? (
-                    <Image src={cat.iconUrl} alt={cat.name} width={40} height={40} className="rounded-lg" />
+                    <SafeImage src={cat.iconUrl || ''} alt={cat.name} width={40} height={40} className="rounded-lg" />
                   ) : (
                     <span className="text-xl">🎮</span>
                   )}
@@ -128,7 +122,7 @@ export default function GameDetailPage() {
                   <Card className="overflow-hidden hover:shadow-[0_16px_40px_rgba(0,0,0,0.35),0_0_20px_rgba(0,245,255,0.1)] transition-all cursor-pointer glass-card border-0 group">
                     <div className="aspect-[4/5] bg-gray-900 relative overflow-hidden">
                       {product.imageUrl && (
-                        <Image src={product.imageUrl} alt={product.name} fill className="object-cover group-hover:scale-105 transition-transform duration-500" />
+                        <SafeImage src={product.imageUrl} alt={product.name} fill className="object-cover group-hover:scale-105 transition-transform duration-500" />
                       )}
                       <div className="absolute inset-0 bg-gradient-to-t from-[#050810f2] via-transparent to-transparent" />
                     </div>

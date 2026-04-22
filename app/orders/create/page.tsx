@@ -2,7 +2,7 @@
 
 import { useEffect, useState, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
-import Image from 'next/image'
+import { SafeImage } from '@/components/safe-image'
 import { Minus, Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -142,7 +142,7 @@ function CreateOrderContent() {
           <div className="flex gap-4">
             <div className="w-20 h-20 rounded-xl bg-gray-900 relative overflow-hidden shrink-0 border border-[rgba(0,245,255,0.1)]">
               {product.imageUrl && (
-                <Image src={product.imageUrl} alt={product.name} fill className="object-cover" />
+                <SafeImage src={product.imageUrl} alt={product.name} fill className="object-cover" />
               )}
             </div>
             <div className="flex-1 min-w-0">

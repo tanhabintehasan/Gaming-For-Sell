@@ -98,14 +98,16 @@ export default function SupportPage() {
   }
 
   return (
-    <div className="min-h-screen relative">
+    <div className="min-h-screen relative pb-24">
       <header className="border-b border-[rgba(0,245,255,0.1)] bg-[rgba(5,8,16,0.8)] backdrop-blur-xl sticky top-0 z-50">
         <div className="max-w-3xl mx-auto px-4 h-14 flex items-center justify-between">
           <h1 className="font-bold text-lg text-white" style={{ fontFamily: 'var(--font-orbitron)' }}>客服中心</h1>
           <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger render={<Button size="sm" className="bg-gradient-to-r from-[#00f5ff] to-[#00c2cc] text-[#050810] font-bold hover:brightness-110 border-0 rounded-xl" />}>
-              <Plus className="w-4 h-4 mr-1" />
-              新建工单
+            <DialogTrigger asChild>
+              <Button size="sm" className="bg-gradient-to-r from-[#00f5ff] to-[#00c2cc] text-[#050810] font-bold hover:brightness-110 border-0 rounded-xl">
+                <Plus className="w-4 h-4 mr-1" />
+                新建工单
+              </Button>
             </DialogTrigger>
             <DialogContent className="bg-[rgba(10,15,30,0.98)] border-[rgba(0,245,255,0.2)] text-[#e8eeff]">
               <DialogHeader>

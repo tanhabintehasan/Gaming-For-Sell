@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import Image from 'next/image'
+import { SafeImage } from '@/components/safe-image'
 import { ChevronLeft, Trash2 } from 'lucide-react'
 
 import { Card } from '@/components/ui/card'
@@ -40,7 +40,7 @@ export default function FavoritesPage() {
   }
 
   return (
-    <div className="min-h-screen relative">
+    <div className="min-h-screen relative pb-24">
       <header className="border-b border-[rgba(0,245,255,0.1)] bg-[rgba(5,8,16,0.8)] backdrop-blur-xl sticky top-0 z-50">
         <div className="max-w-3xl mx-auto px-4 h-14 flex items-center gap-3">
           <Link href="/profile">
@@ -57,7 +57,7 @@ export default function FavoritesPage() {
               <Card className="overflow-hidden group cursor-pointer glass-card hover:border-[rgba(0,245,255,0.4)] hover:shadow-[0_16px_40px_rgba(0,0,0,0.35),0_0_20px_rgba(0,245,255,0.1)] transition-all duration-300 border-0">
                 <div className="aspect-[4/5] bg-gray-900 relative overflow-hidden">
                   {product.imageUrl && (
-                    <Image
+                    <SafeImage
                       src={product.imageUrl}
                       alt={product.name}
                       fill

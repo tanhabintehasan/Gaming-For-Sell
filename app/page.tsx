@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import Image from 'next/image'
+import { SafeImage } from '@/components/safe-image'
 import { Search, Headphones, ChevronRight, Flame, Star, TrendingUp } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -48,7 +48,17 @@ export default function HomePage() {
     fetch('/api/games')
       .then(safeJson)
       .then((res) => {
-        if (res.success) setGames(res.data)
+        if (res.success) {
+          setGames(res.data)
+          if (res.data[0]) {
+            fetch(`/api/games/${res.data[0].id}/categories`)
+              .then(safeJson)
+              .then((catRes) => {
+                if (catRes.success) setCategories(catRes.data.slice(0, 14))
+              })
+              .catch(() => {})
+          }
+        }
       })
       .catch(() => {})
 
@@ -56,20 +66,6 @@ export default function HomePage() {
       .then(safeJson)
       .then((res) => {
         if (res.success) setProducts(res.data.products)
-      })
-      .catch(() => {})
-
-    fetch('/api/games')
-      .then(safeJson)
-      .then((res) => {
-        if (res.success && res.data[0]) {
-          fetch(`/api/games/${res.data[0].id}/categories`)
-            .then(safeJson)
-            .then((catRes) => {
-              if (catRes.success) setCategories(catRes.data.slice(0, 14))
-            })
-            .catch(() => {})
-        }
       })
       .catch(() => {})
   }, [])
@@ -98,7 +94,7 @@ export default function HomePage() {
 
         {/* Hero Banner */}
         <div className="relative rounded-[2rem] overflow-hidden aspect-[16/7] lg:aspect-[21/6] shadow-[0_24px_70px_rgba(0,0,0,0.38)]">
-          <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=1200&h=400&fit=crop')] bg-cover bg-center" />
+          <div className="absolute inset-0 bg-gradient-to-br from-[#0a1a2e] via-[#061220] to-[#040810]" />
           <div className="absolute inset-0 bg-gradient-to-r from-[#040816eb] via-[#040816b8] to-[#04081647]" />
           <div className="absolute inset-0 bg-gradient-to-b from-[rgba(0,234,255,0.05)] to-[rgba(255,0,128,0.06)]" />
           <div className="absolute inset-0" style={{
@@ -149,7 +145,7 @@ export default function HomePage() {
               >
                 <div className="w-14 h-14 lg:w-[72px] lg:h-[72px] rounded-2xl overflow-hidden bg-[rgba(0,245,255,0.08)] border border-[rgba(0,245,255,0.12)] shadow-[0_8px_30px_rgba(0,0,0,0.18)] group-hover:border-[rgba(0,245,255,0.4)] group-hover:shadow-[0_0_24px_rgba(0,245,255,0.18)] transition-all duration-300">
                   {game.logoUrl && (
-                    <Image src={game.logoUrl} alt={game.nameCn} width={72} height={72} className="w-full h-full object-cover" />
+                    <SafeImage src={game.logoUrl} alt={game.nameCn} width={72} height={72} className="w-full h-full object-cover" />
                   )}
                 </div>
                 <span className="text-xs text-center line-clamp-1 text-[rgba(216,232,255,0.85)] group-hover:text-[#00f5ff] transition-colors">{game.nameCn}</span>
@@ -195,7 +191,7 @@ export default function HomePage() {
                 >
                   <div className="w-12 h-12 lg:w-14 lg:h-14 rounded-full overflow-hidden bg-[rgba(0,245,255,0.08)] border border-[rgba(0,245,255,0.12)] group-hover:border-[rgba(0,245,255,0.4)] group-hover:shadow-[0_0_16px_rgba(0,245,255,0.15)] transition-all">
                     {cat.iconUrl && (
-                      <Image src={cat.iconUrl} alt={cat.name} width={56} height={56} className="w-full h-full object-cover" />
+                      <SafeImage src={cat.iconUrl} alt={cat.name} width={56} height={56} className="w-full h-full object-cover" />
                     )}
                   </div>
                   <span className="text-xs text-center line-clamp-1 text-[rgba(216,232,255,0.8)] group-hover:text-[#00f5ff] transition-colors">{cat.name}</span>
@@ -253,7 +249,7 @@ function ProductCard({ product }: { product: Product }) {
       <Card className="overflow-hidden group cursor-pointer glass-card hover:border-[rgba(0,245,255,0.4)] hover:shadow-[0_16px_40px_rgba(0,0,0,0.35),0_0_20px_rgba(0,245,255,0.1)] transition-all duration-300 border-0">
         <div className="aspect-[4/5] bg-gray-900 relative overflow-hidden">
           {product.imageUrl && (
-            <Image
+            <SafeImage
               src={product.imageUrl}
               alt={product.name}
               fill
