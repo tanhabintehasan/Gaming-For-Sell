@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { toast } from 'sonner'
 import { getSocket } from '@/lib/socket'
+import { playMessageSound } from '@/lib/sound'
 
 interface TicketDetail {
   id: string
@@ -72,7 +73,10 @@ export default function TicketDetailPage() {
     socket.emit('join-ticket', id)
 
     const handleNewReply = ({ ticketId }: { ticketId: string }) => {
-      if (ticketId === id) fetchTicket()
+      if (ticketId === id) {
+        playMessageSound()
+        fetchTicket()
+      }
     }
 
     const handleTicketUpdated = ({ ticketId }: { ticketId: string }) => {

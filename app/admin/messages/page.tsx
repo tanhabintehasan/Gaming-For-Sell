@@ -3,12 +3,14 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { io } from 'socket.io-client'
 import { ChevronLeft, MessageSquare, Ticket, Clock, CheckCircle2, LogOut } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { fetchAuthMe } from '@/lib/auth-client'
 import { toast } from 'sonner'
+import { playMessageSound } from '@/lib/sound'
 
 interface Conversation {
   type: 'message' | 'ticket'
@@ -37,15 +39,7 @@ export default function AdminMessagesPage() {
   const [conversations, setConversations] = useState<Conversation[]>([])
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    fetchAuthMe()
-      .then((res) => {
-        if (!res.success || res.data.level !== 'ADMIN') {
-          router.push('/backstage/admin/login')
-        }
-      })
-      .catch(() => {})
-
+  const fetchConversations = () => {
     fetch('/api/admin/messages')
       .then((r) => r.json())
       .then((res) => {
@@ -59,6 +53,37 @@ export default function AdminMessagesPage() {
       .finally(() => {
         setLoading(false)
       })
+  }
+
+  useEffect(() => {
+    fetchAuthMe()
+      .then((res) => {
+        if (!res.success || res.data.level !== 'ADMIN') {
+          router.push('/backstage/admin/login')
+        }
+      })
+      .catch(() => {})
+
+    fetchConversations()
+
+    // Real-time socket listener
+    const socket = io(undefined, { path: '/api/socket', addTrailingSlash: false })
+    socket.on('new-message', () => {
+      playMessageSound()
+      fetchConversations()
+    })
+    socket.on('new-reply', () => {
+      playMessageSound()
+      fetchConversations()
+    })
+    socket.on('ticket-updated', () => {
+      playMessageSound()
+      fetchConversations()
+    })
+
+    return () => {
+      socket.disconnect()
+    }
   }, [router])
 
   if (loading) {

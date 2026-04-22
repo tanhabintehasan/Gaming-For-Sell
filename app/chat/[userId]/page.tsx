@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { toast } from 'sonner'
 import { fetchAuthMe } from '@/lib/auth-client'
+import { playMessageSound } from '@/lib/sound'
 
 interface Message {
   id: string
@@ -79,6 +80,10 @@ export default function ChatPage() {
     socket.emit('join-conversation', me.id)
     socket.on('new-message', ({ message }: { message: Message }) => {
       if (message.senderId === userId || message.receiverId === userId) {
+        // Only play sound if receiving a message from the other person
+        if (message.senderId === userId && message.receiverId === me.id) {
+          playMessageSound()
+        }
         setMessages((prev) => [...prev, message])
         if (message.receiverId === me.id && message.senderId === userId) {
           fetch('/api/messages/read', {
