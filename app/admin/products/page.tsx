@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { ChevronLeft, Plus, Edit2, Trash2, Package } from 'lucide-react'
+import { ChevronLeft, Plus, Edit2, Trash2, Package, Upload, X, ImageIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -55,6 +55,33 @@ const emptyForm = {
   isActive: true,
 }
 
+const selectOptionStyle = { backgroundColor: '#050810', color: '#e8eeff' }
+
+async function uploadImage(file: File): Promise<string> {
+  const formData = new FormData()
+  formData.append('file', file)
+  const res = await fetch('/api/admin/upload', { method: 'POST', body: formData })
+  const data = await res.json()
+  if (!data.success) throw new Error(data.message || '上传失败')
+  return data.data.url
+}
+
+function ImagePreview({ src, alt, className }: { src: string; alt: string; className?: string }) {
+  const [error, setError] = useState(false)
+  if (!src || error) {
+    return (
+      <div className={`flex items-center justify-center bg-[rgba(0,245,255,0.05)] border border-[rgba(0,245,255,0.1)] text-[rgba(180,200,255,0.3)] ${className}`}>
+        <ImageIcon className="w-6 h-6" />
+      </div>
+    )
+  }
+  return (
+    <div className={`relative overflow-hidden ${className}`}>
+      <Image src={src} alt={alt} fill className="object-cover" onError={() => setError(true)} />
+    </div>
+  )
+}
+
 export default function AdminProductsPage() {
   const router = useRouter()
   const [products, setProducts] = useState<Product[]>([])
@@ -65,6 +92,7 @@ export default function AdminProductsPage() {
   const [editing, setEditing] = useState<Product | null>(null)
   const [form, setForm] = useState(emptyForm)
   const [saving, setSaving] = useState(false)
+  const [uploading, setUploading] = useState(false)
 
   useEffect(() => {
     fetchAuthMe()
@@ -123,6 +151,22 @@ export default function AdminProductsPage() {
       isActive: product.isActive,
     })
     setDialogOpen(true)
+  }
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setUploading(true)
+    try {
+      const url = await uploadImage(file)
+      setForm((f) => ({ ...f, imageUrl: url }))
+      toast.success('图片上传成功')
+    } catch (err: any) {
+      toast.error(err.message || '上传失败')
+    } finally {
+      setUploading(false)
+      e.target.value = ''
+    }
   }
 
   const handleSave = async () => {
@@ -296,11 +340,11 @@ export default function AdminProductsPage() {
               <select
                 value={form.gameId}
                 onChange={(e) => setForm((f) => ({ ...f, gameId: e.target.value, categoryId: '' }))}
-                className="w-full h-11 rounded-xl bg-[rgba(0,245,255,0.05)] border border-[rgba(0,245,255,0.15)] text-[#e8eeff] px-3"
+                className="w-full h-11 rounded-xl bg-[rgba(0,245,255,0.05)] border border-[rgba(0,245,255,0.15)] text-[#e8eeff] px-3 outline-none focus:border-[rgba(0,245,255,0.4)]"
               >
-                <option value="">请选择游戏</option>
+                <option value="" style={selectOptionStyle}>请选择游戏</option>
                 {games.map((g) => (
-                  <option key={g.id} value={g.id}>{g.nameCn}</option>
+                  <option key={g.id} value={g.id} style={selectOptionStyle}>{g.nameCn}</option>
                 ))}
               </select>
             </div>
@@ -309,11 +353,11 @@ export default function AdminProductsPage() {
               <select
                 value={form.categoryId}
                 onChange={(e) => setForm((f) => ({ ...f, categoryId: e.target.value }))}
-                className="w-full h-11 rounded-xl bg-[rgba(0,245,255,0.05)] border border-[rgba(0,245,255,0.15)] text-[#e8eeff] px-3"
+                className="w-full h-11 rounded-xl bg-[rgba(0,245,255,0.05)] border border-[rgba(0,245,255,0.15)] text-[#e8eeff] px-3 outline-none focus:border-[rgba(0,245,255,0.4)]"
               >
-                <option value="">不选择分类</option>
+                <option value="" style={selectOptionStyle}>不选择分类</option>
                 {categories.map((c) => (
-                  <option key={c.id} value={c.id}>{c.name}</option>
+                  <option key={c.id} value={c.id} style={selectOptionStyle}>{c.name}</option>
                 ))}
               </select>
             </div>
@@ -341,10 +385,10 @@ export default function AdminProductsPage() {
                 <select
                   value={form.serviceType}
                   onChange={(e) => setForm((f) => ({ ...f, serviceType: e.target.value }))}
-                  className="w-full h-11 rounded-xl bg-[rgba(0,245,255,0.05)] border border-[rgba(0,245,255,0.15)] text-[#e8eeff] px-3"
+                  className="w-full h-11 rounded-xl bg-[rgba(0,245,255,0.05)] border border-[rgba(0,245,255,0.15)] text-[#e8eeff] px-3 outline-none focus:border-[rgba(0,245,255,0.4)]"
                 >
-                  <option value="HOURLY">按小时</option>
-                  <option value="PACKAGE">套餐</option>
+                  <option value="HOURLY" style={selectOptionStyle}>按小时</option>
+                  <option value="PACKAGE" style={selectOptionStyle}>套餐</option>
                 </select>
               </div>
               <div className="space-y-2">
@@ -352,10 +396,30 @@ export default function AdminProductsPage() {
                 <Input type="number" value={form.durationHours} onChange={(e) => setForm((f) => ({ ...f, durationHours: e.target.value }))} className="bg-[rgba(0,245,255,0.05)] border-[rgba(0,245,255,0.12)] text-[#e8eeff] rounded-xl h-11" />
               </div>
             </div>
+
+            {/* Image upload instead of URL */}
             <div className="space-y-2">
-              <Label className="text-[rgba(180,200,255,0.75)]">图片地址</Label>
-              <Input value={form.imageUrl} onChange={(e) => setForm((f) => ({ ...f, imageUrl: e.target.value }))} placeholder="https://..." className="bg-[rgba(0,245,255,0.05)] border-[rgba(0,245,255,0.12)] text-[#e8eeff] rounded-xl h-11" />
+              <Label className="text-[rgba(180,200,255,0.75)]">商品图片</Label>
+              <div className="flex items-center gap-3">
+                {form.imageUrl && (
+                  <div className="relative">
+                    <ImagePreview src={form.imageUrl} alt="preview" className="w-16 h-16 rounded-lg" />
+                    <button
+                      onClick={() => setForm((f) => ({ ...f, imageUrl: '' }))}
+                      className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[#ff2244] text-white flex items-center justify-center"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  </div>
+                )}
+                <label className="cursor-pointer inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-[rgba(0,245,255,0.2)] bg-[rgba(0,245,255,0.05)] text-[#00f5ff] hover:bg-[rgba(0,245,255,0.1)] transition-colors text-sm">
+                  <Upload className="w-4 h-4" />
+                  {uploading ? '上传中...' : form.imageUrl ? '更换图片' : '上传图片'}
+                  <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} disabled={uploading} />
+                </label>
+              </div>
             </div>
+
             <div className="space-y-2">
               <Label className="text-[rgba(180,200,255,0.75)]">卖家ID（可选）</Label>
               <Input value={form.sellerId} onChange={(e) => setForm((f) => ({ ...f, sellerId: e.target.value }))} placeholder="绑定到特定打手" className="bg-[rgba(0,245,255,0.05)] border-[rgba(0,245,255,0.12)] text-[#e8eeff] rounded-xl h-11" />
