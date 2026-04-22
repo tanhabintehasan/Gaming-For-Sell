@@ -16,6 +16,7 @@ import {
   ClipboardList,
   Wallet,
   LogOut,
+  FileText,
 } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { toast } from 'sonner'
@@ -37,6 +38,7 @@ const menuItems = [
   { icon: ClipboardList, label: '打手申请', href: '/admin/applications', desc: '审核打手入驻申请', color: 'from-[#ec4899] to-[#f472b6]' },
   { icon: Wallet, label: '提现审核', href: '/admin/withdrawals', desc: '审核打手提现申请', color: 'from-[#f59e0b] to-[#fbbf24]' },
   { icon: Settings, label: '系统配置', href: '/admin/settings', desc: '支付、短信、Logo等', color: 'from-[#ffd700] to-[#ffaa00]' },
+  { icon: FileText, label: '页面内容', href: '/admin/content', desc: '隐私政策、用户协议等', color: 'from-[#10b981] to-[#34d399]' },
 ]
 
 export default function AdminDashboard() {
