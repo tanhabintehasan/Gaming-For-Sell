@@ -44,6 +44,12 @@ async function main() {
     { username: '阿强', phone: '13900139003', gender: 'MALE', age: 24, location: '广州市', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=user3' },
     { username: '丽丽', phone: '13900139004', gender: 'FEMALE', age: 21, location: '深圳市', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=user4' },
     { username: '大壮', phone: '13900139005', gender: 'MALE', age: 26, location: '成都市', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=user5' },
+    // Former sellers 1-5 now regular users
+    { username: '凌速-陈尾鱼', phone: '13800138001', gender: 'MALE', age: 22, location: '广州市', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=seller1' },
+    { username: '凌速-小浩', phone: '13800138002', gender: 'MALE', age: 22, location: '重庆市', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=seller2' },
+    { username: '凌速-子溪', phone: '13800138003', gender: 'FEMALE', age: 22, location: '成都市', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=seller3' },
+    { username: '凌速-玫瑰', phone: '13800138004', gender: 'FEMALE', age: 20, location: '徐州市', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=seller4' },
+    { username: '凌速-阿文', phone: '13800138005', gender: 'MALE', age: 24, location: '北京市', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=seller5' },
   ]
 
   for (const u of userData) {
@@ -222,13 +228,8 @@ async function main() {
   hokCategories.push(await prisma.gameCategory.create({ data: { gameId: hok.id, name: '国标代打', slug: 'national-badge', iconUrl: 'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=100&h=100&fit=crop', sortOrder: 5, defaultHourlyRate: 200 } }))
   hokCategories.push(await prisma.gameCategory.create({ data: { gameId: hok.id, name: '娱乐模式', slug: 'casual-mode', iconUrl: 'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=100&h=100&fit=crop', sortOrder: 6, defaultHourlyRate: 40 } }))
 
-  // Seller users + profiles
+  // Seller users + profiles (only 3 sellers now)
   const sellerData = [
-    { username: '凌速-陈尾鱼', phone: '13800138001', gender: 'MALE', age: 22, location: '广州市', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=seller1' },
-    { username: '凌速-小浩', phone: '13800138002', gender: 'MALE', age: 22, location: '重庆市', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=seller2' },
-    { username: '凌速-子溪', phone: '13800138003', gender: 'FEMALE', age: 22, location: '成都市', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=seller3' },
-    { username: '凌速-玫瑰', phone: '13800138004', gender: 'FEMALE', age: 20, location: '徐州市', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=seller4' },
-    { username: '凌速-阿文', phone: '13800138005', gender: 'MALE', age: 24, location: '北京市', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=seller5' },
     { username: '凌速-小雨', phone: '13800138006', gender: 'FEMALE', age: 21, location: '上海市', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=seller6' },
     { username: '凌速-战神', phone: '13800138007', gender: 'MALE', age: 25, location: '深圳市', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=seller7' },
     { username: '凌速-萌萌', phone: '13800138008', gender: 'FEMALE', age: 19, location: '杭州市', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=seller8' },
