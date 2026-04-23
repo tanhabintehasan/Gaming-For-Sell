@@ -75,13 +75,13 @@ export async function POST(
     const productCode = isMobile ? 'QUICK_WAP_WAY' : 'FAST_INSTANT_TRADE_PAY'
 
     const formHtml = alipaySdk.pageExec(method, 'POST', {
-      notify_url: notifyUrl,
-      return_url: returnUrl,
-      biz_content: {
-        out_trade_no: order.orderNumber,
-        total_amount: order.totalAmount.toFixed(2),
+      notifyUrl,
+      returnUrl,
+      bizContent: {
+        outTradeNo: order.orderNumber,
+        totalAmount: order.totalAmount.toFixed(2),
         subject: `订单${order.orderNumber}`,
-        product_code: productCode,
+        productCode,
       },
     })
 

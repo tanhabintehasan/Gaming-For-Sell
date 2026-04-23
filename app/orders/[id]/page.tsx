@@ -56,6 +56,10 @@ export default function OrderDetailPage() {
   const [gateway, setGateway] = useState('ALIPAY')
   const [payLoading, setPayLoading] = useState(false)
   const [reviewOpen, setReviewOpen] = useState(false)
+
+  useEffect(() => {
+    if (!payOpen) setPayLoading(false)
+  }, [payOpen])
   const [rating, setRating] = useState(5)
   const [reviewContent, setReviewContent] = useState('')
   const [reviewLoading, setReviewLoading] = useState(false)
@@ -106,6 +110,8 @@ export default function OrderDetailPage() {
         toast.error('支付表单生成失败')
         setPayLoading(false)
       }
+      // Fallback: if navigation doesn't happen within 5s, reset loading state
+      setTimeout(() => setPayLoading(false), 5000)
     } else {
       toast.error(data.message || '支付发起失败')
       setPayLoading(false)

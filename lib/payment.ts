@@ -58,8 +58,17 @@ export async function getAlipaySdk() {
 }
 
 export function getBaseUrl(): string {
-  if (process.env.NEXT_PUBLIC_SITE_URL) return process.env.NEXT_PUBLIC_SITE_URL
-  if (process.env.SITE_URL) return process.env.SITE_URL
+  let url = process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL || ''
+  if (url) {
+    url = url.trim()
+    // Fix accidental double protocol like https://http://example.com
+    url = url.replace(/^(https?:\/\/)(https?:\/\/)/, '$2')
+    // Ensure protocol exists
+    if (!/^https?:\/\//.test(url)) url = `https://${url}`
+    // Remove trailing slash
+    url = url.replace(/\/$/, '')
+    return url
+  }
   if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`
   return 'http://localhost:3000'
 }
