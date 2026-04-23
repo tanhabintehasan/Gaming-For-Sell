@@ -16,19 +16,10 @@ const PRIVATE_KEY_PART2 =
 
 const ALIPAY_PRIVATE_KEY = PRIVATE_KEY_PART1 + PRIVATE_KEY_PART2
 
-// IMPORTANT: You MUST set this to Alipay's public key (not your app's public key).
-// Get it from: https://open.alipay.com → Your App → Development Settings → Alipay Public Key
-let ALIPAY_PUBLIC_KEY = ''
+// IMPORTANT: This is Alipay's public key (not your app's public key).
+const ALIPAY_PUBLIC_KEY = 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAh/rX1sbvGYA2K9vtkYdoOuRU7IQSUAeZ7GzNt9TEXTTjpaGGEkd2fWDaAXGLylKYy3I3g11YKZWOvxZGIRzVUvTCIUAtJ2KUJYhwRo8VFDjV1L+97zeWOfoF0Sznnxt6pp5hi7JnsHJrBqDnn0/IGr0d47w1yKAA4ORQVoJTJeLZMlMwUKPorsAAq9QuFAcXgARIBEpkB1RCdjZMGRenjrEfJU/fRHE9Q6vlizuci789xWGP+hptQ8vNzKH87PgS7vQsNUgokhNc6M30GjDYo73DYVG27lWiswjfNL3tj1fh6cIl232NBGejNgA9GF800cJhA1+Xvrwn6ZBpBXLZuQIDAQAB'
 
 async function main() {
-  const args = process.argv.slice(2)
-
-  // Allow overriding via CLI flags
-  const pubKeyFlag = args.find((a) => a.startsWith('--public-key='))
-  if (pubKeyFlag) {
-    ALIPAY_PUBLIC_KEY = pubKeyFlag.replace('--public-key=', '')
-  }
-
   const settings = [
     {
       configKey: 'alipay_enabled',
@@ -63,14 +54,6 @@ async function main() {
       create: s,
     })
     console.log(`✅ Updated ${s.configKey}`)
-  }
-
-  if (!ALIPAY_PUBLIC_KEY) {
-    console.log('\n⚠️  WARNING: alipay_public_key is empty.')
-    console.log('   Real Alipay notifications will fail signature validation.')
-    console.log('   Please add it using:')
-    console.log(`   npx tsx scripts/update-payment-settings.ts --public-key="YOUR_ALIPAY_PUBLIC_KEY"`)
-    console.log('   Or go to /admin/settings and paste it there.')
   }
 
   console.log('\n🎉 Payment settings updated.')

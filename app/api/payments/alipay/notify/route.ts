@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
     let valid = false
     try {
       const alipaySdk = await getAlipaySdk()
-      valid = alipaySdk.checkNotifySign(body)
+      valid = alipaySdk.checkNotifySignV2(body)
     } catch {
       console.error('Alipay SDK initialization failed – public key may be missing')
       return new Response('fail', { status: 400 })
