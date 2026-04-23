@@ -159,7 +159,7 @@ export default function OrderDetailPage() {
           <div className="flex gap-3 mb-4">
             <div className="w-20 h-20 rounded-xl bg-gray-900 relative overflow-hidden shrink-0 border border-[rgba(0,245,255,0.08)]">
               {order.product?.imageUrl && (
-                <Image src={order.product.imageUrl} alt={order.product.name} fill className="object-cover" />
+                <SafeImage src={order.product.imageUrl} alt={order.product.name} fill className="object-cover" />
               )}
             </div>
             <div className="flex-1 min-w-0">
