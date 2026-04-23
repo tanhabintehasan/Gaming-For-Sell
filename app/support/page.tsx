@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { toast } from 'sonner'
 
@@ -103,12 +103,10 @@ export default function SupportPage() {
         <div className="max-w-3xl mx-auto px-4 h-14 flex items-center justify-between">
           <h1 className="font-bold text-lg text-white" style={{ fontFamily: 'var(--font-orbitron)' }}>客服中心</h1>
           <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild>
-              <Button size="sm" className="bg-gradient-to-r from-[#00f5ff] to-[#00c2cc] text-[#050810] font-bold hover:brightness-110 border-0 rounded-xl">
-                <Plus className="w-4 h-4 mr-1" />
-                新建工单
-              </Button>
-            </DialogTrigger>
+            <Button size="sm" className="bg-gradient-to-r from-[#00f5ff] to-[#00c2cc] text-[#050810] font-bold hover:brightness-110 border-0 rounded-xl" onClick={() => setOpen(true)}>
+              <Plus className="w-4 h-4 mr-1" />
+              新建工单
+            </Button>
             <DialogContent className="bg-[rgba(10,15,30,0.98)] border-[rgba(0,245,255,0.2)] text-[#e8eeff]">
               <DialogHeader>
                 <DialogTitle className="text-white">新建客服工单</DialogTitle>

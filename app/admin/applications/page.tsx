@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { toast } from 'sonner'
@@ -165,14 +165,14 @@ export default function AdminApplicationsPage() {
               {app.status === 'PENDING' ? (
                 <div className="flex items-center gap-2 mt-4">
                   <Dialog open={selectedId === app.id} onOpenChange={(open) => !open && setSelectedId(null)}>
-                    <DialogTrigger render={<Button
+                    <Button
                       size="sm"
                       onClick={() => setSelectedId(app.id)}
                       className="flex-1 rounded-xl bg-gradient-to-r from-[#00f5ff] to-[#00c2cc] text-[#050810] font-bold hover:brightness-110 border-0"
-                    />}>
+                    >
                       <CheckCircle2 className="w-4 h-4 mr-1" />
                       通过
-                    </DialogTrigger>
+                    </Button>
                     <DialogContent className="bg-[rgba(10,15,30,0.98)] border-[rgba(0,245,255,0.15)] text-[#e8eeff]">
                       <DialogHeader>
                         <DialogTitle className="text-white">审核申请 - 通过</DialogTitle>
@@ -203,15 +203,15 @@ export default function AdminApplicationsPage() {
                   </Dialog>
 
                   <Dialog open={selectedId === `reject-${app.id}`} onOpenChange={(open) => !open && setSelectedId(null)}>
-                    <DialogTrigger render={<Button
+                    <Button
                       size="sm"
                       onClick={() => setSelectedId(`reject-${app.id}`)}
                       variant="outline"
                       className="flex-1 rounded-xl border-[rgba(255,34,68,0.3)] text-[#ff5f7a] hover:bg-[rgba(255,34,68,0.1)]"
-                    />}>
+                    >
                       <XCircle className="w-4 h-4 mr-1" />
                       拒绝
-                    </DialogTrigger>
+                    </Button>
                     <DialogContent className="bg-[rgba(10,15,30,0.98)] border-[rgba(0,245,255,0.15)] text-[#e8eeff]">
                       <DialogHeader>
                         <DialogTitle className="text-white">审核申请 - 拒绝</DialogTitle>

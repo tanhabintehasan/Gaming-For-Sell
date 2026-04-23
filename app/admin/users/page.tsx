@@ -14,7 +14,6 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/components/ui/dialog'
 import { Label } from '@/components/ui/label'
 import { toast } from 'sonner'
@@ -126,10 +125,10 @@ export default function AdminUsersPage() {
           </Tabs>
 
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-            <DialogTrigger render={<Button className="rounded-xl bg-gradient-to-r from-[#00f5ff] to-[#00c2cc] text-[#050810] font-bold hover:brightness-110 border-0" />}>
+            <Button className="rounded-xl bg-gradient-to-r from-[#00f5ff] to-[#00c2cc] text-[#050810] font-bold hover:brightness-110 border-0" onClick={() => setDialogOpen(true)}>
               <Plus className="w-4 h-4 mr-1" />
               添加用户
-            </DialogTrigger>
+            </Button>
             <DialogContent className="bg-[rgba(10,15,30,0.98)] border-[rgba(0,245,255,0.15)] text-[#e8eeff]">
               <DialogHeader>
                 <DialogTitle className="text-white">添加用户 / 管理员</DialogTitle>
