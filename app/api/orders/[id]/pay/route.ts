@@ -2,6 +2,7 @@ import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getAuthUser } from '@/lib/auth'
 import { successResponse, errorResponse } from '@/lib/api'
+import { getAlipayConfig, getAlipaySdk, getBaseUrl } from '@/lib/payment'
 
 export async function POST(
   request: NextRequest,
@@ -18,6 +19,10 @@ export async function POST(
     return errorResponse('请选择支付方式')
   }
 
+  if (gateway === 'WECHAT_PAY') {
+    return errorResponse('微信支付暂未接入，请选择支付宝')
+  }
+
   const order = await prisma.order.findFirst({
     where: {
       id,
@@ -30,33 +35,62 @@ export async function POST(
     return errorResponse('订单不存在或已支付', 404)
   }
 
-  await prisma.payment.create({
-    data: {
-      orderId: order.id,
-      gateway,
-      amount: order.totalAmount,
-      status: 'PENDING',
-    },
-  })
+  try {
+    const config = await getAlipayConfig()
+    if (!config.enabled) {
+      return errorResponse('支付宝支付未启用')
+    }
+    if (!config.appId || !config.privateKey) {
+      return errorResponse('支付宝支付配置不完整，请联系管理员配置')
+    }
+    if (!config.alipayPublicKey) {
+      return errorResponse('支付宝公钥未配置，请联系管理员')
+    }
 
-  const updatedOrder = await prisma.order.update({
-    where: { id },
-    data: {
-      status: 'PAID',
-      paidAt: new Date(),
-    },
-    include: {
-      game: true,
-      product: true,
-      seller: { select: { id: true, username: true, avatar: true } },
-      customer: { select: { id: true, username: true, avatar: true } },
-    },
-  })
+    const alipaySdk = await getAlipaySdk()
 
-  await prisma.payment.updateMany({
-    where: { orderId: id },
-    data: { status: 'SUCCESS', paidAt: new Date() },
-  })
+    // Create or reuse pending payment record
+    let payment = await prisma.payment.findFirst({
+      where: { orderId: order.id, status: 'PENDING', gateway: 'ALIPAY' },
+    })
 
-  return successResponse(updatedOrder, '支付成功')
+    if (!payment) {
+      payment = await prisma.payment.create({
+        data: {
+          orderId: order.id,
+          gateway: 'ALIPAY',
+          amount: order.totalAmount,
+          status: 'PENDING',
+        },
+      })
+    }
+
+    const baseUrl = getBaseUrl()
+    const notifyUrl = `${baseUrl}/api/payments/alipay/notify`
+    const returnUrl = `${baseUrl}/payment/result?orderNumber=${order.orderNumber}`
+
+    const userAgent = request.headers.get('user-agent') || ''
+    const isMobile = /Mobile|Android|iPhone/i.test(userAgent)
+    const method = isMobile ? 'alipay.trade.wap.pay' : 'alipay.trade.page.pay'
+    const productCode = isMobile ? 'QUICK_WAP_WAY' : 'FAST_INSTANT_TRADE_PAY'
+
+    const formHtml = alipaySdk.pageExec(method, 'POST', {
+      notify_url: notifyUrl,
+      return_url: returnUrl,
+      biz_content: {
+        out_trade_no: order.orderNumber,
+        total_amount: order.totalAmount.toFixed(2),
+        subject: `订单${order.orderNumber}`,
+        product_code: productCode,
+      },
+    })
+
+    return successResponse({ form: formHtml }, '请前往支付宝完成支付')
+  } catch (error) {
+    console.error('Alipay pay error:', error)
+    return errorResponse(
+      error instanceof Error ? error.message : '支付发起失败',
+      500
+    )
+  }
 }

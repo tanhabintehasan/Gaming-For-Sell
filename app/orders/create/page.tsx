@@ -96,7 +96,7 @@ function CreateOrderContent() {
       const data = await res.json()
       if (data.success) {
         toast.success('订单创建成功')
-        router.push('/profile')
+        router.push(`/orders/${data.data.id}`)
       } else {
         toast.error(data.message)
       }

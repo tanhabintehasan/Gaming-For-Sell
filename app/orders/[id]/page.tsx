@@ -93,14 +93,23 @@ export default function OrderDetailPage() {
       body: JSON.stringify({ gateway }),
     })
     const data = await res.json()
-    if (data.success) {
-      setOrder(data.data)
-      setPayOpen(false)
-      toast.success(`支付成功`)
+    if (data.success && data.data?.form) {
+      // Inject Alipay form and auto-submit to redirect user
+      const div = document.createElement('div')
+      div.style.display = 'none'
+      div.innerHTML = data.data.form
+      document.body.appendChild(div)
+      const form = div.querySelector('form')
+      if (form) {
+        form.submit()
+      } else {
+        toast.error('支付表单生成失败')
+        setPayLoading(false)
+      }
     } else {
-      toast.error(data.message)
+      toast.error(data.message || '支付发起失败')
+      setPayLoading(false)
     }
-    setPayLoading(false)
   }
 
   const handleReview = async () => {
