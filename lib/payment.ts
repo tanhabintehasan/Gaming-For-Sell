@@ -31,9 +31,10 @@ export async function getAlipayConfig(): Promise<AlipayConfig> {
     privateKey: map.get('alipay_private_key') || '',
     alipayPublicKey: map.get('alipay_public_key') || '',
     gateway:
-      process.env.NODE_ENV === 'production'
+      process.env.ALIPAY_GATEWAY ||
+      (process.env.NODE_ENV === 'production'
         ? 'https://openapi.alipay.com/gateway.do'
-        : 'https://openapi.alipaydev.com/gateway.do',
+        : 'https://openapi.alipaydev.com/gateway.do'),
   }
 }
 
