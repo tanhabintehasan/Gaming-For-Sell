@@ -244,13 +244,14 @@ model Message {
 
 model Payment {
   id                String    @id @default(uuid())
-  orderId           String?
+  orderId           String?   @unique
   gateway           String
   gatewayPaymentId  String?
   amount            Float
   currency          String    @default("CNY")
   status            String    @default("PENDING")
   gatewayResponse   String?
+  metadata          String?   // JSON string storing checkout data before order exists
   paidAt            DateTime?
   createdAt         DateTime  @default(now())
 

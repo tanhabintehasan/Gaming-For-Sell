@@ -9,13 +9,13 @@ import { CheckCircle, Loader2, XCircle } from 'lucide-react'
 function PaymentResultContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
-  const orderNumber =
-    searchParams?.get('orderNumber') || searchParams?.get('out_trade_no') || ''
+  const orderNumber = searchParams?.get('orderNumber') || searchParams?.get('out_trade_no') || ''
+  const paymentId = searchParams?.get('paymentId') || ''
   const [status, setStatus] = useState<'loading' | 'success' | 'pending' | 'error'>('loading')
   const [message, setMessage] = useState('正在查询支付结果...')
 
   useEffect(() => {
-    if (!orderNumber) {
+    if (!orderNumber && !paymentId) {
       setStatus('error')
       setMessage('缺少订单信息')
       return
@@ -23,7 +23,13 @@ function PaymentResultContent() {
 
     const checkStatus = async () => {
       try {
-        const res = await fetch(`/api/payments/status?orderNumber=${orderNumber}`)
+        let url = '/api/payments/status?'
+        if (paymentId) {
+          url += `paymentId=${paymentId}`
+        } else {
+          url += `orderNumber=${orderNumber}`
+        }
+        const res = await fetch(url)
         const data = await res.json()
         if (data.success && data.data.paid) {
           setStatus('success')
@@ -41,7 +47,7 @@ function PaymentResultContent() {
     checkStatus()
     const interval = setInterval(checkStatus, 3000)
     return () => clearInterval(interval)
-  }, [orderNumber])
+  }, [orderNumber, paymentId])
 
   const icon = {
     loading: <Loader2 className="w-12 h-12 text-[#00f5ff] animate-spin" />,
@@ -49,6 +55,8 @@ function PaymentResultContent() {
     pending: <Loader2 className="w-12 h-12 text-yellow-400 animate-spin" />,
     error: <XCircle className="w-12 h-12 text-red-400" />,
   }[status]
+
+  const displayId = orderNumber || paymentId
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4">
@@ -58,9 +66,9 @@ function PaymentResultContent() {
           {status === 'success' ? '支付成功' : status === 'error' ? '出错了' : '处理中'}
         </h1>
         <p className="text-[rgba(180,200,255,0.7)]">{message}</p>
-        {orderNumber && (
+        {displayId && (
           <p className="text-sm text-[rgba(180,200,255,0.5)] font-mono">
-            订单号: {orderNumber}
+            单号: {displayId}
           </p>
         )}
         <div className="flex gap-3 pt-2">

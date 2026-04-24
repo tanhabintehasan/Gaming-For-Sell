@@ -4,7 +4,7 @@ import { prisma } from '../lib/prisma'
 // The private key below was reconstructed from the chat message.
 // It was exposed in plain text. You should rotate it in the Alipay Developer Console ASAP.
 
-const ALIPAY_APP_ID = '2088012685028981'
+const ALIPAY_APP_ID = '2021006150663026'
 
 // The user's private key got accidentally split by the phrase " and public key : "
 // We reconstruct the full PKCS#8 private key here.

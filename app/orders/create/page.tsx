@@ -80,7 +80,7 @@ function CreateOrderContent() {
     if (!product) return
     setLoading(true)
     try {
-      const res = await fetch('/api/orders', {
+      const res = await fetch('/api/checkout/pay', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -94,15 +94,27 @@ function CreateOrderContent() {
         }),
       })
       const data = await res.json()
-      if (data.success) {
-        toast.success('订单创建成功')
-        router.push(`/orders/${data.data.id}`)
+      if (data.success && data.data?.form) {
+        // Inject Alipay form and auto-submit to redirect user
+        const div = document.createElement('div')
+        div.style.display = 'none'
+        div.innerHTML = data.data.form
+        document.body.appendChild(div)
+        const form = div.querySelector('form')
+        if (form) {
+          form.submit()
+        } else {
+          toast.error('支付表单生成失败')
+          setLoading(false)
+        }
+        // Fallback: if navigation doesn't happen within 5s, reset loading state
+        setTimeout(() => setLoading(false), 5000)
       } else {
-        toast.error(data.message)
+        toast.error(data.message || '支付发起失败')
+        setLoading(false)
       }
     } catch {
-      toast.error('创建订单失败')
-    } finally {
+      toast.error('支付发起失败')
       setLoading(false)
     }
   }
@@ -249,7 +261,7 @@ function CreateOrderContent() {
             onClick={handleSubmit}
             disabled={loading}
           >
-            {loading ? '提交中...' : '提交订单'}
+            {loading ? '支付中...' : '确认支付'}
           </Button>
         </div>
       </div>

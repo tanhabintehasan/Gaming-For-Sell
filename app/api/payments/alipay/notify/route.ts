@@ -37,26 +37,60 @@ export async function POST(request: NextRequest) {
       return new Response('success', { status: 200 })
     }
 
-    const order = await prisma.order.findUnique({
-      where: { orderNumber: outTradeNo },
+    // Find the payment record by its ID (used as out_trade_no)
+    const payment = await prisma.payment.findUnique({
+      where: { id: outTradeNo },
     })
 
-    if (!order) {
-      console.error('Alipay notify: order not found', outTradeNo)
+    if (!payment) {
+      console.error('Alipay notify: payment not found', outTradeNo)
       return new Response('success', { status: 200 })
     }
 
-    if (order.status === 'PAID') {
+    if (payment.status === 'SUCCESS') {
       return new Response('success', { status: 200 })
     }
+
+    // Parse metadata to create the order
+    let metadata: any = {}
+    try {
+      metadata = JSON.parse(payment.metadata || '{}')
+    } catch {
+      console.error('Alipay notify: failed to parse payment metadata', outTradeNo)
+      return new Response('fail', { status: 500 })
+    }
+
+    if (!metadata.gameId || !metadata.productId) {
+      console.error('Alipay notify: missing metadata fields', outTradeNo)
+      return new Response('fail', { status: 500 })
+    }
+
+    const orderNumber = `SL${Date.now()}${Math.floor(Math.random() * 1000)}`
 
     await prisma.$transaction([
-      prisma.order.update({
-        where: { id: order.id },
-        data: { status: 'PAID', paidAt: new Date() },
+      prisma.order.create({
+        data: {
+          orderNumber,
+          gameId: metadata.gameId,
+          customerId: metadata.customerId,
+          sellerId: metadata.sellerId || null,
+          productId: metadata.productId,
+          categoryId: metadata.categoryId || null,
+          status: 'PAID',
+          subtotal: metadata.subtotal,
+          platformFee: metadata.platformFee,
+          totalAmount: metadata.totalAmount,
+          sellerEarnings: metadata.sellerEarnings,
+          gamePlatform: metadata.gamePlatform || null,
+          gameIdUsername: metadata.gameIdUsername || null,
+          gameServerRegion: metadata.gameServerRegion || null,
+          requirements: metadata.requirements || null,
+          durationHours: metadata.durationHours || 1,
+          paidAt: new Date(),
+        },
       }),
-      prisma.payment.updateMany({
-        where: { orderId: order.id, status: 'PENDING' },
+      prisma.payment.update({
+        where: { id: payment.id },
         data: {
           status: 'SUCCESS',
           gatewayPaymentId: tradeNo,
@@ -66,7 +100,7 @@ export async function POST(request: NextRequest) {
       }),
     ])
 
-    console.log('Alipay notify processed for order', outTradeNo)
+    console.log('Alipay notify processed for payment', outTradeNo, 'order created', orderNumber)
     return new Response('success', { status: 200 })
   } catch (error) {
     console.error('Alipay notify error:', error)
